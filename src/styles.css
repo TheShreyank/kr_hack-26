@@ -465,9 +465,9 @@ h1, h2, h3 {
 }
 
 .badge-score {
-  background: var(--emerald);
+  background: #e0663d;
   color: #fff;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .scene-body {
@@ -528,10 +528,10 @@ h1, h2, h3 {
 }
 
 .tag-kn.matched {
-  background: #dff3e8;
-  border: 1px solid var(--emerald);
-  color: #14663f;
-  font-weight: 700;
+  background: #fde8df;
+  border: 1px solid #e0663d;
+  color: #9a3412;
+  font-weight: 600;
 }
 
 .scene-footer {

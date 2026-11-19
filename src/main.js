@@ -348,7 +348,9 @@ async function executeSearch({ queryText = "", audioBase64 = null } = {}) {
   showAllBtn.style.display = cleanQ || activeCategory !== "All" ? "inline-flex" : "none";
 
   const isFiltered = Boolean(cleanQ);
-  currentResults = response.results;
+  currentResults = isFiltered
+    ? response.results.filter((entry) => Math.round((entry.score || 0) * 100) >= 45)
+    : response.results;
 
   updateStatusText(isFiltered);
   renderScenesGrid(currentResults, isFiltered);

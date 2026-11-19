@@ -159,6 +159,8 @@ Return ONLY valid JSON:
   }
 }
 
+const MIN_COMPATIBILITY_SCORE = 0.45;
+
 export function localKannadaSemanticSearch(queryText, dataset) {
   const cleanQuery = (queryText || "").trim();
   if (!cleanQuery) {
@@ -238,7 +240,7 @@ export function localKannadaSemanticSearch(queryText, dataset) {
   });
 
   const filtered = scored
-    .filter((entry) => entry.score > 0.08)
+    .filter((entry) => entry.score >= MIN_COMPATIBILITY_SCORE)
     .sort((a, b) => b.score - a.score);
 
   return {
@@ -266,7 +268,7 @@ export async function searchScenes({ queryText = "", audioBase64 = null, dataset
   const systemInstruction = `You are Chitra-Maathu (ಚಿತ್ರ-ಮಾತು), a Kannada voice-to-image retrieval system.
 Given a user's query (either as spoken Kannada audio or Kannada/English text) and a catalog of Karnataka scenes:
 1. If audio is provided, transcribe the complete spoken Kannada sentence accurately into UTF-8 Kannada in "transcribedQuery" (do not drop words or only pick keywords—write the full sentence spoken by the user). If only text is provided, keep "transcribedQuery" as the query text.
-2. Rank the matching scenes from the catalog by semantic relevance (score 0.15 to 0.99).
+2. Rank only genuinely relevant scenes from the catalog with semantic relevance score between 0.45 and 0.99 (omit weak matches below 0.45).
 3. Return ONLY valid JSON:
 {
   "transcribedQuery": "ಬಳಕೆದಾರರು ಹೇಳಿದ ಪೂರ್ಣ ಕನ್ನಡ ವಾಕ್ಯ",
@@ -306,15 +308,18 @@ Given a user's query (either as spoken Kannada audio or Kannada/English text) an
     const parsed = JSON.parse(rawJson);
 
     const byId = new Map(dataset.map((d) => [d.id, d]));
-    const results = (parsed.matches || [])
+    const rawMatches = parsed.matches || [];
+    const results = rawMatches
       .filter((m) => byId.has(m.id))
       .map((m) => ({
         item: byId.get(m.id),
-        score: m.score || 0.85,
+        score: typeof m.score === "number" ? m.score : 0.85,
         matchedTokens: m.matchedTokens || []
-      }));
+      }))
+      .filter((entry) => entry.score >= MIN_COMPATIBILITY_SCORE)
+      .sort((a, b) => b.score - a.score);
 
-    if (results.length === 0 && (parsed.transcribedQuery || queryText)) {
+    if (rawMatches.length === 0 && (parsed.transcribedQuery || queryText)) {
       return localKannadaSemanticSearch(parsed.transcribedQuery || queryText, dataset);
     }
 
