@@ -7,7 +7,7 @@ const CATEGORY_LABELS_KN = {
   Food: "ಆಹಾರ (Food)",
   Festivals: "ಹಬ್ಬ-ಜಾತ್ರೆ (Festivals)",
   Nature: "ಪ್ರಕೃತಿ (Nature)",
-  Campus: "ಕ್ಯಾಂಪಸ್ (Campus)"
+  Building: "ಕಟ್ಟಡಗಳು (Building)"
 };
 
 let dataset = [...SEED_DATASET];
@@ -297,12 +297,26 @@ function renderScenesGrid(results, isFiltered = false) {
         <button class="btn btn-sm btn-audio listen-caption-btn">
           🔊 <span class="kn-text">ಧ್ವನಿ ಕೇಳಿ (Play Audio)</span>
         </button>
+        <button class="btn btn-sm btn-delete delete-scene-btn" title="Delete this entry">
+          🗑️ <span class="kn-text">ಅಳಿಸಿ</span>
+        </button>
       </div>
     `;
 
     const playBtn = card.querySelector(".listen-caption-btn");
     playBtn.addEventListener("click", () => {
       playSceneAudio(item, playBtn);
+    });
+
+    const deleteBtn = card.querySelector(".delete-scene-btn");
+    deleteBtn.addEventListener("click", () => {
+      stopActiveAudio();
+      dataset = dataset.filter((d) => d.id !== item.id);
+      currentResults = currentResults.filter((r) => r.item.id !== item.id);
+      const isCurrentlyFiltered = Boolean(searchQueryInput.value.trim());
+      updateStatusText(isCurrentlyFiltered);
+      renderScenesGrid(currentResults, isCurrentlyFiltered);
+      showToast(`🗑️ ಚಿತ್ರವನ್ನು ಅಳಿಸಲಾಗಿದೆ (${item.id} deleted)`);
     });
 
     scenesGrid.appendChild(card);
@@ -457,6 +471,8 @@ voiceSearchBtn.addEventListener("click", async () => {
 
 function openModal() {
   stopActiveAudio();
+  studioRegionInput.value = "";
+  studioCategorySelect.value = "Streets";
   addSceneModal.classList.add("open");
   addSceneModal.setAttribute("aria-hidden", "false");
 }
@@ -547,7 +563,7 @@ const CATEGORY_DEFAULT_TAGS_KN = {
   Food: ["ಬೀದಿ_ಆಹಾರ", "ಕರ್ನಾಟಕ_ರುಚಿ", "ಸ್ಥಳೀಯ_ತಿಂಡಿ", "ಆಹಾರ_ಸಂಸ್ಕೃತಿ"],
   Festivals: ["ನಾಡಹಬ್ಬ_ಸಂಭ್ರಮ", "ಸಾಂಸ್ಕೃತಿಕ_ಪರಂಪರೆ", "ಹಬ್ಬ_ಜಾತ್ರೆ", "ಕರ್ನಾಟಕ_ಉತ್ಸವ"],
   Nature: ["ಪ್ರಕೃತಿ_ಸೌಂದರ್ಯ", "ಕರಾವಳಿ_ಮಲೆನಾಡು", "ಹಸಿರು_ಪರಿಸರ", "ಕರ್ನಾಟಕ_ಪ್ರವಾಸ"],
-  Campus: ["ಕ್ಯಾಂಪಸ್_ಜೀವನ", "ವಿದ್ಯಾರ್ಥಿ_ಲೋಕ", "ಶೈಕ್ಷಣಿಕ_ಆವರಣ", "ಕಾಲೇಜು_ದಿನಗಳು"]
+  Building: ["ಪಾರಂಪರಿಕ_ಕಟ್ಟಡ", "ವಾಸ್ತುಶಿಲ್ಪ_ವೈಭವ", "ಕರ್ನಾಟಕ_ಸ್ಮಾರಕ", "ಐತಿಹಾಸಿಕ_ಕಟ್ಟಡ"]
 };
 
 let lastAnnotatedData = null;
@@ -716,6 +732,8 @@ addSceneToDatasetBtn.addEventListener("click", () => {
   closeModal();
 
   // Reset modal fields
+  studioRegionInput.value = "";
+  studioCategorySelect.value = "Streets";
   studioVerbatimInput.value = "";
   studioCaptionInput.value = "";
   recordedStudioWavBlob = null;

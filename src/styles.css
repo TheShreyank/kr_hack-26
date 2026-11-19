@@ -463,7 +463,7 @@ h1, h2, h3 {
 }
 
 .btn-audio {
-  width: 100%;
+  flex: 1;
   justify-content: center;
   background: #fff3d6;
   border: 1px solid var(--border-gold);
@@ -475,6 +475,19 @@ h1, h2, h3 {
   background: var(--vermilion);
   border-color: var(--vermilion);
   color: #fff;
+}
+
+.btn-delete {
+  background: #fff;
+  border: 1px solid rgba(217, 57, 31, 0.3);
+  color: var(--vermilion-dark);
+  padding: 0.45rem 0.7rem;
+  flex-shrink: 0;
+}
+
+.btn-delete:hover {
+  background: #fee2e2;
+  border-color: var(--vermilion);
 }
 
 /* Modal */

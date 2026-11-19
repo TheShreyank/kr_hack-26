@@ -4,7 +4,7 @@ export const SCENE_CATEGORIES = [
   { id: "food", label_kn: "ಆಹಾರ (Food)", value: "Food" },
   { id: "festivals", label_kn: "ಹಬ್ಬ-ಜಾತ್ರೆ (Festivals)", value: "Festivals" },
   { id: "nature", label_kn: "ಪ್ರಕೃತಿ (Nature)", value: "Nature" },
-  { id: "campus", label_kn: "ಕ್ಯಾಂಪಸ್ (Campus)", value: "Campus" }
+  { id: "building", label_kn: "ಕಟ್ಟಡಗಳು (Building)", value: "Building" }
 ];
 
 export const SEED_DATASET = [
@@ -113,8 +113,8 @@ export const SEED_DATASET = [
     title_kn: "ಮಣಿಪಾಲದ ಹಸ್ತಶಿಲ್ಪ ಪಾರಂಪರಿಕ ಗ್ರಾಮದ ಹೆಂಚಿನ ಮನೆಗಳ ಬೀದಿ",
     title_en: "Traditional Coastal Heritage Street at Hasta Shilpa, Manipal",
     region: "ಉಡುಪಿ (Udupi)",
-    category: "Campus",
-    category_kn: "ಕ್ಯಾಂಪಸ್ (Campus)",
+    category: "Building",
+    category_kn: "ಕಟ್ಟಡಗಳು (Building)",
     speaker_id: "SPK-04",
     duration_sec: 17.1,
     spoken_query_example: "ಮಣಿಪಾಲದ ಹಳೆಯ ಹೆಂಚಿನ ಮನೆಗಳ ಬೀದಿ",
@@ -153,8 +153,8 @@ export const SEED_DATASET = [
     title_kn: "ನಮ್ಮ ಕಾಲೇಜಿನ ಹತ್ತಿರದ ಪಾನಿಪೂರಿ ಅಂಗಡಿ",
     title_en: "Evening Roadside Chaat & Panipuri Vendor, Bengaluru",
     region: "ಬೆಂಗಳೂರು ನಗರ (Bengaluru Urban)",
-    category: "Campus",
-    category_kn: "ಕ್ಯಾಂಪಸ್ (Campus)",
+    category: "Building",
+    category_kn: "ಕಟ್ಟಡಗಳು (Building)",
     speaker_id: "SPK-02",
     duration_sec: 18.5,
     spoken_query_example: "ನಮ್ಮ ಕಾಲೇಜಿನ ಹತ್ತಿರದ ಪಾನಿಪೂರಿ ಅಂಗಡಿ",
@@ -173,8 +173,8 @@ export const SEED_DATASET = [
     title_kn: "ಎಂ. ಎಸ್. ರಾಮಯ್ಯ ತಾಂತ್ರಿಕ ಮಹಾವಿದ್ಯಾಲಯದ (MSRIT) ಮುಖ್ಯ ದ್ವಾರ",
     title_en: "M. S. Ramaiah Institute of Technology (MSRIT) Front Gate, Bengaluru",
     region: "ಬೆಂಗಳೂರು ನಗರ (Bengaluru Urban)",
-    category: "Campus",
-    category_kn: "ಕ್ಯಾಂಪಸ್ (Campus)",
+    category: "Building",
+    category_kn: "ಕಟ್ಟಡಗಳು (Building)",
     speaker_id: "SPK-01",
     duration_sec: 17.5,
     spoken_query_example: "ರಾಮಯ್ಯ ಕಾಲೇಜು ಮುಖ್ಯ ದ್ವಾರ ತೋರಿಸು",
@@ -193,8 +193,8 @@ export const SEED_DATASET = [
     title_kn: "ರಾಮಯ್ಯ ಕಾಲೇಜು (MSRIT) ಅಪೆಕ್ಸ್ ಬ್ಲಾಕ್ ಆವರಣದಲ್ಲಿ ವಿದ್ಯಾರ್ಥಿಗಳು",
     title_en: "Students at MSRIT Apex Block Campus, Bengaluru",
     region: "ಬೆಂಗಳೂರು ನಗರ (Bengaluru Urban)",
-    category: "Campus",
-    category_kn: "ಕ್ಯಾಂಪಸ್ (Campus)",
+    category: "Building",
+    category_kn: "ಕಟ್ಟಡಗಳು (Building)",
     speaker_id: "SPK-02",
     duration_sec: 15.9,
     spoken_query_example: "ಕಾಲೇಜು ಕ್ಯಾಂಪಸ್ ಕಟ್ಟಡ ಮತ್ತು ವಿದ್ಯಾರ್ಥಿಗಳು",
