@@ -44,7 +44,7 @@ export const SEED_DATASET = [
     translation_en: "Families and visitors strolling across the lawns of the historic Gol Gumbaz in Vijayapura (Bijapur), North Karnataka.",
     tags_kn: ["ಉತ್ತರ_ಕರ್ನಾಟಕ", "ವಿಜಯಪುರ_ಪರಂಪರೆ", "ಗೋಳಗುಮ್ಮಟ", "ಸಂಜೆಯ_ವಿಹಾರ", "ಐತಿಹಾಸಿಕ_ಸ್ಮಾರಕ"],
     tags_en: ["bijapur", "vijayapura", "gol gumbaz", "north karnataka", "heritage", "visitors"],
-    image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Gol_Gumbaz%2C_Bijapur_2.jpg/1280px-Gol_Gumbaz%2C_Bijapur_2.jpg",
+    image_url: "/photos/CM-KA-017.jpg",
     audio_url: "/audio/CM-KA-017.mp3",
     fallback_theme: { bg1: "#92400e", bg2: "#d97706", icon: "🕌", label: "ವಿಜಯಪುರದ ಗೋಳಗುಮ್ಮಟ" }
   },
@@ -104,7 +104,7 @@ export const SEED_DATASET = [
     translation_en: "People enjoying an evening walk by the Arabian Sea shore and fishing boats at Malpe Beach near Manipal and Udupi.",
     tags_kn: ["ಮಲ್ಪೆ_ಕಡಲತೀರ", "ಮಣಿಪಾಲ_ಉಡುಪಿ", "ಕರಾವಳಿ_ಕರ್ನಾಟಕ", "ಅರಬ್ಬೀ_ಸಮುದ್ರ", "ಸಂಜೆಯ_ವಿಹಾರ"],
     tags_en: ["malpe beach", "manipal", "udupi", "beach", "coast", "sea", "fishing boats"],
-    image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Malpe_Beach-01.jpg/1280px-Malpe_Beach-01.jpg",
+    image_url: "/photos/CM-KA-020.jpg",
     audio_url: "/audio/CM-KA-020.mp3",
     fallback_theme: { bg1: "#0369a1", bg2: "#38bdf8", icon: "🌊", label: "ಮಲ್ಪೆ ಕಡಲತೀರ · ಮಣಿಪಾಲ-ಉಡುಪಿ" }
   },
@@ -124,7 +124,7 @@ export const SEED_DATASET = [
     translation_en: "A traditional coastal Karnataka street with Mangalore-tiled roofs preserved at Hasta Shilpa Heritage Village in Manipal.",
     tags_kn: ["ಮಣಿಪಾಲ_ಪರಂಪರೆ", "ಕರಾವಳಿ_ವಾಸ್ತುಶಿಲ್ಪ", "ಮಂಗಳೂರು_ಹೆಂಚು", "ಪಾರಂಪರಿಕ_ಗ್ರಾಮ", "ಉಡುಪಿ_ಜಿಲ್ಲೆ"],
     tags_en: ["manipal", "udupi", "heritage", "coastal architecture", "street", "tiled roof"],
-    image_url: "https://upload.wikimedia.org/wikipedia/commons/c/c9/Hasthashilpa_Manipal_67.jpg",
+    image_url: "/photos/CM-KA-021.jpg",
     audio_url: "/audio/CM-KA-021.mp3",
     fallback_theme: { bg1: "#78350f", bg2: "#b45309", icon: "🏘️", label: "ಮಣಿಪಾಲದ ಪಾರಂಪರಿಕ ಬೀದಿ" }
   },
@@ -144,7 +144,7 @@ export const SEED_DATASET = [
     translation_en: "A lush green coffee and black pepper estate shaded by tall Western Ghats trees in Kodagu (Coorg).",
     tags_kn: ["ಕೊಡಗಿನ_ಕಾಫಿ", "ಮಲೆನಾಡು_ಪ್ರಕೃತಿ", "ಮಡಿಕೇರಿ_ಬೆಟ್ಟ", "ಕಾಫಿ_ತೋಟ", "ಪಶ್ಚಿಮ_ಘಟ್ಟ"],
     tags_en: ["coorg", "kodagu", "madikeri", "coffee plantation", "nature", "western ghats", "hills"],
-    image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Coffee_Plantation_in_Coorg..jpg/1280px-Coffee_Plantation_in_Coorg..jpg",
+    image_url: "/photos/CM-KA-022.jpg",
     audio_url: "/audio/CM-KA-022.mp3",
     fallback_theme: { bg1: "#14532d", bg2: "#16a34a", icon: "🌿", label: "ಕೊಡಗಿನ ಕಾಫಿ ತೋಟ" }
   },
@@ -184,7 +184,7 @@ export const SEED_DATASET = [
     translation_en: "The main entrance gate of M. S. Ramaiah Institute of Technology (MSRIT) in Mathikere, Bengaluru.",
     tags_kn: ["ರಾಮಯ್ಯ_ಕಾಲೇಜು", "ತಾಂತ್ರಿಕ_ಶಿಕ್ಷಣ", "ಮತ್ತಿಕೆರೆ_ಕ್ಯಾಂಪಸ್", "ಬೆಂಗಳೂರು_ಕಾಲೇಜು", "ವಿದ್ಯಾರ್ಥಿ_ಪ್ರವೇಶ"],
     tags_en: ["ramaiah", "msrit", "college", "campus", "gate", "mathikere", "bengaluru"],
-    image_url: "https://upload.wikimedia.org/wikipedia/commons/a/af/MSRIT_from_front_gate.jpg",
+    image_url: "/photos/CM-KA-009.jpg",
     audio_url: "/audio/CM-KA-009.mp3",
     fallback_theme: { bg1: "#991b1b", bg2: "#d97706", icon: "🎓", label: "ರಾಮಯ್ಯ ಕಾಲೇಜು (MSRIT)" }
   },
@@ -204,7 +204,7 @@ export const SEED_DATASET = [
     translation_en: "Students walking across the courtyard in front of the Apex Block academic building at MSRIT, Bengaluru.",
     tags_kn: ["ಕ್ಯಾಂಪಸ್_ಜೀವನ", "ರಾಮಯ್ಯ_ವಿದ್ಯಾರ್ಥಿಗಳು", "ಅಪೆಕ್ಸ್_ಬ್ಲಾಕ್", "ಶೈಕ್ಷಣಿಕ_ಆವರಣ", "ಬೆಂಗಳೂರು"],
     tags_en: ["msrit", "ramaiah", "apex block", "campus", "students", "college", "bengaluru"],
-    image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/M_S_Ramaiah_Institute_of_Technology_Apex_Block.jpg/1280px-M_S_Ramaiah_Institute_of_Technology_Apex_Block.jpg",
+    image_url: "/photos/CM-KA-010.jpg",
     audio_url: "/audio/CM-KA-010.mp3",
     fallback_theme: { bg1: "#1e3a8a", bg2: "#3b82f6", icon: "🏫", label: "MSRIT ಅಪೆಕ್ಸ್ ಬ್ಲಾಕ್" }
   },
@@ -284,7 +284,7 @@ export const SEED_DATASET = [
     translation_en: "Devotees walking past the traditional wooden temple chariot on Car Street (Ratha Beedi) at Udupi Sri Krishna Matha.",
     tags_kn: ["ಉಡುಪಿ_ರಥಬೀದಿ", "ಕರಾವಳಿ_ಸಂಸ್ಕೃತಿ", "ದೇವಾಲಯದ_ತೇರು", "ಧಾರ್ಮಿಕ_ಪರಂಪರೆ", "ಭಕ್ತರ_ಸಂಚಾರ"],
     tags_en: ["udupi", "chariot", "temple", "car street", "rathabeedi", "coastal", "festival"],
-    image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Udupi_Sri_Krishna_temple_chariot%2C_Udupi%2C_Karnataka%2C_India_%282018%29.jpg/1280px-Udupi_Sri_Krishna_temple_chariot%2C_Udupi%2C_Karnataka%2C_India_%282018%29.jpg",
+    image_url: "/photos/CM-KA-003.jpg",
     audio_url: "/audio/CM-KA-003.mp3",
     fallback_theme: { bg1: "#9a3412", bg2: "#ea580c", icon: "🛕", label: "ಉಡುಪಿ ರಥಬೀದಿ" }
   },
@@ -384,7 +384,7 @@ export const SEED_DATASET = [
     translation_en: "Dense green foliage canopies shading both sides of Pilikula Road in Mangaluru, Dakshina Kannada.",
     tags_kn: ["ಮಂಗಳೂರು_ಪ್ರಕೃತಿ", "ಕರಾವಳಿ_ಹಸಿರು", "ಪಿಲಿಕುಳ_ಮಾರ್ಗ", "ದಕ್ಷಿಣ_ಕನ್ನಡ", "ಶಾಂತ_ರಸ್ತೆ"],
     tags_en: ["mangaluru", "mangalore", "pilikula", "nature", "trees", "road", "coastal"],
-    image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Pilikula_Road_in_Mangalore_-_3.jpg/1280px-Pilikula_Road_in_Mangalore_-_3.jpg",
+    image_url: "/photos/CM-KA-013.jpg",
     audio_url: "/audio/CM-KA-013.mp3",
     fallback_theme: { bg1: "#166534", bg2: "#22c55e", icon: "🌳", label: "ಮಂಗಳೂರಿನ ಪಿಲಿಕುಳ ರಸ್ತೆ" }
   },
@@ -424,7 +424,7 @@ export const SEED_DATASET = [
     translation_en: "The historic Mysuru Palace glowing with thousands of golden lights on a Dasara festival evening.",
     tags_kn: ["ಮೈಸೂರು_ದಸರಾ", "ಅರಮನೆ_ದೀಪಾಲಂಕಾರ", "ನಾಡಹಬ್ಬ_ವೈಭವ", "ಪಾರಂಪರಿಕ_ಸ್ಮಾರಕ", "ಸಾಂಸ್ಕೃತಿಕ_ನಗರಿ"],
     tags_en: ["mysuru", "mysore", "palace", "lights", "illuminated", "dasara", "festival"],
-    image_url: "https://images.unsplash.com/photo-1590766940554-634a7ed41450?auto=format&fit=crop&w=1400&q=85",
+    image_url: "/photos/CM-KA-015.jpg",
     audio_url: "/audio/CM-KA-015.mp3",
     fallback_theme: { bg1: "#92400e", bg2: "#f59e0b", icon: "🏰", label: "ಮೈಸೂರು ಅರಮನೆಯ ದೀಪಾಲಂಕಾರ" }
   },
@@ -444,7 +444,7 @@ export const SEED_DATASET = [
     translation_en: "The iconic monolithic Stone Chariot standing in the temple courtyard of Vijaya Vittala Temple, Hampi.",
     tags_kn: ["ವಿಜಯನಗರ_ಸಾಮ್ರಾಜ್ಯ", "ಹಂಪಿ_ಕಲ್ಲಿನರಥ", "ಶಿಲ್ಪಕಲಾ_ಪರಂಪರೆ", "ವಿಶ್ವ_ಪರಂಪರೆ", "ಐತಿಹಾಸಿಕ_ತಾಣ"],
     tags_en: ["hampi", "stone chariot", "chariot", "temple", "monument", "heritage"],
-    image_url: "https://images.unsplash.com/photo-1600100397608-f010f423b971?auto=format&fit=crop&w=1400&q=85",
+    image_url: "/photos/CM-KA-016.jpg",
     audio_url: "/audio/CM-KA-016.mp3",
     fallback_theme: { bg1: "#9a3412", bg2: "#ea580c", icon: "🏛️", label: "ಹಂಪಿಯ ಕಲ್ಲಿನ ರಥ" }
   }

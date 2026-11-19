@@ -299,6 +299,76 @@ h1, h2, h3 {
   box-shadow: var(--shadow-md);
 }
 
+/* Pipeline Visualizer (Slide 1 Alignment) */
+.pipeline-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  margin: 1.15rem auto 1.45rem auto;
+  padding: 0.55rem 1.15rem;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid var(--border-gold);
+  border-radius: 999px;
+  box-shadow: var(--shadow-sm);
+  max-width: 900px;
+  flex-wrap: wrap;
+}
+
+.pipeline-heading {
+  font-family: var(--font-heading);
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: var(--vermilion);
+}
+
+.pipeline-steps {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.pipeline-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: #fbf5ea;
+  padding: 0.22rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid rgba(120, 53, 15, 0.12);
+}
+
+.pipeline-step .step-num {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: var(--vermilion);
+  color: #fff;
+  font-size: 0.68rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.pipeline-step.pipeline-active {
+  background: #ffebaa;
+  border-color: var(--gold);
+  color: #78350f;
+  font-weight: 700;
+}
+
+.pipeline-sep {
+  color: var(--gold-dark);
+  font-weight: 700;
+  font-size: 1rem;
+}
+
 /* Results Bar */
 .results-bar {
   display: flex;
