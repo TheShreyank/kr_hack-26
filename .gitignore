@@ -4,6 +4,5 @@ dist/
 .env.local
 .DS_Store
 *.zip
-public/photos_orig/
 __pycache__/
 *.pyc

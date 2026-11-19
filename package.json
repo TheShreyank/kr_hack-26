@@ -1,6 +1,7 @@
 {
   "name": "chitra-maathu-kr-hack-26",
   "version": "1.0.0",
+  "type": "module",
   "description": "Chitra-Maathu (ಚಿತ್ರ-ಮಾತು) - Modalapada 2.0 Kannada Multimodal AI Hackathon Prototype (Challenge 03)",
   "scripts": {
     "dev": "vite",
