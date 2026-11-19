@@ -542,6 +542,16 @@ resetBlurBtn.addEventListener("click", () => {
   }
 });
 
+const CATEGORY_DEFAULT_TAGS_KN = {
+  Streets: ["ಬೀದಿ_ಜನಜೀವನ", "ನಗರ_ಸಂಚಾರ", "ಕರ್ನಾಟಕ_ದೃಶ್ಯ", "ದಿನನಿತ್ಯದ_ಬದುಕು"],
+  Food: ["ಬೀದಿ_ಆಹಾರ", "ಕರ್ನಾಟಕ_ರುಚಿ", "ಸ್ಥಳೀಯ_ತಿಂಡಿ", "ಆಹಾರ_ಸಂಸ್ಕೃತಿ"],
+  Festivals: ["ನಾಡಹಬ್ಬ_ಸಂಭ್ರಮ", "ಸಾಂಸ್ಕೃತಿಕ_ಪರಂಪರೆ", "ಹಬ್ಬ_ಜಾತ್ರೆ", "ಕರ್ನಾಟಕ_ಉತ್ಸವ"],
+  Nature: ["ಪ್ರಕೃತಿ_ಸೌಂದರ್ಯ", "ಕರಾವಳಿ_ಮಲೆನಾಡು", "ಹಸಿರು_ಪರಿಸರ", "ಕರ್ನಾಟಕ_ಪ್ರವಾಸ"],
+  Campus: ["ಕ್ಯಾಂಪಸ್_ಜೀವನ", "ವಿದ್ಯಾರ್ಥಿ_ಲೋಕ", "ಶೈಕ್ಷಣಿಕ_ಆವರಣ", "ಕಾಲೇಜು_ದಿನಗಳು"]
+};
+
+let lastAnnotatedData = null;
+
 async function runAudioAndImageTranscription() {
   autoCaptionBtn.disabled = true;
   autoCaptionBtn.textContent = "⏳ ರಚಿಸಲಾಗುತ್ತಿದೆ...";
@@ -558,6 +568,8 @@ async function runAudioAndImageTranscription() {
       audioBase64,
       hintText: studioVerbatimInput.value
     });
+
+    lastAnnotatedData = annotated;
 
     if (annotated.verbatim_audio_transcript_kn) {
       studioVerbatimInput.value = annotated.verbatim_audio_transcript_kn;
@@ -671,10 +683,15 @@ addSceneToDatasetBtn.addEventListener("click", () => {
     ? uploadCanvas.toDataURL("image/jpeg", 0.92)
     : "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=1400&q=85";
 
+  const curatedTags =
+    lastAnnotatedData?.tags_kn && lastAnnotatedData.tags_kn.length
+      ? lastAnnotatedData.tags_kn
+      : CATEGORY_DEFAULT_TAGS_KN[selectedCategory] || ["ಕರ್ನಾಟಕ_ಸಂಸ್ಕೃತಿ", "ಜನಜೀವನ_ದೃಶ್ಯ"];
+
   const newEntry = {
     id: newId,
-    title_kn: finalCaption.slice(0, 38),
-    title_en: "Karnataka Scene",
+    title_kn: lastAnnotatedData?.title_kn || finalCaption.slice(0, 38),
+    title_en: lastAnnotatedData?.title_en || "Karnataka Cultural Scene",
     region: studioRegionInput.value.trim() || "ಮೈಸೂರು (Mysuru)",
     category: selectedCategory,
     category_kn: CATEGORY_LABELS_KN[selectedCategory] || selectedCategory,
@@ -683,18 +700,16 @@ addSceneToDatasetBtn.addEventListener("click", () => {
     spoken_query_example: finalCaption.slice(0, 32),
     verbatim_audio_transcript_kn: verbatim || finalCaption,
     corrected_caption_kn: finalCaption,
-    transliteration_en: finalCaption,
-    translation_en: "User contributed Karnataka scene.",
-    tags_kn: finalCaption
-      .replace(/[.,?!]/g, "")
-      .split(/\s+/)
-      .filter((w) => w.length > 2)
-      .slice(0, 5),
+    transliteration_en: lastAnnotatedData?.transliteration_en || finalCaption,
+    translation_en: lastAnnotatedData?.translation_en || "A candid scene capturing everyday life in Karnataka.",
+    tags_kn: curatedTags,
     tags_en: ["karnataka", selectedCategory.toLowerCase()],
     image_url: imageDataUrl,
     custom_wav_url: recordedStudioWavBlob ? URL.createObjectURL(recordedStudioWavBlob) : null,
     fallback_theme: { bg1: "#78350f", bg2: "#d97706", icon: "📷", label: finalCaption.slice(0, 24) }
   };
+
+  lastAnnotatedData = null;
 
   dataset.unshift(newEntry);
   resetSearch();

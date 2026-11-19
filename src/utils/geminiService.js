@@ -21,8 +21,17 @@ const KANNADA_SYNONYM_MAP = {
   "ಬಾದಾಮಿ": ["ಬಾದಾಮಿ ಹಾಲು", "ಫೇಣಿ", "ತಿಂಡಿ ಬೀದಿ", "ಹಾಲು", "ಸಿಹಿ"],
   "ರಥ": ["ಕಲ್ಲಿನ ರಥ", "ಹಂಪಿ", "ಉಡುಪಿ", "ರಥಬೀದಿ", "ದೇವಾಲಯ", "ತೇರು"],
   "ಹಂಪಿ": ["ಕಲ್ಲಿನ ರಥ", "ವಿಜಯನಗರ", "ದೇವಾಲಯ", "ಸ್ಮಾರಕ"],
-  "ಉಡುಪಿ": ["ರಥಬೀದಿ", "ರಥ", "ದೇವಸ್ಥಾನ", "ಕರಾವಳಿ"],
-  "ಮಂಗಳೂರು": ["ಪಿಲಿಕುಳ", "ಪ್ರಕೃತಿ", "ಹಸಿರು", "ಮರಗಳು", "ದಕ್ಷಿಣ ಕನ್ನಡ"],
+  "ಉಡುಪಿ": ["ರಥಬೀದಿ", "ರಥ", "ದೇವಸ್ಥಾನ", "ಕರಾವಳಿ", "ಮಲ್ಪೆ", "ಮಣಿಪಾಲ", "ಕಡಲತೀರ"],
+  "ಮಣಿಪಾಲ": ["ಉಡುಪಿ", "ಮಲ್ಪೆ", "ಕಡಲತೀರ", "ಸಮುದ್ರ", "ಮೀನುಗಾರಿಕೆ", "ದೋಣಿ"],
+  "ಮಲ್ಪೆ": ["ಕಡಲತೀರ", "ಸಮುದ್ರ", "ಮೀನುಗಾರರು", "ದೋಣಿ", "ಉಡುಪಿ", "ಮಣಿಪಾಲ"],
+  "ಕಡಲತೀರ": ["ಬೀಚ್", "ಸಮುದ್ರ", "ಮಲ್ಪೆ", "ಮಣಿಪಾಲ", "ಉಡುಪಿ", "ದೋಣಿ", "ಕರಾವಳಿ"],
+  "ಕೊಡಗು": ["ಮಡಿಕೇರಿ", "ಕಾಫಿ", "ತೋಟ", "ಬೆಟ್ಟ", "ಮಂಜು", "ಪ್ರಕೃತಿ"],
+  "ಮಡಿಕೇರಿ": ["ಕೊಡಗು", "ಕಾಫಿ", "ತೋಟ", "ಮಂಜು", "ಪ್ರಕೃತಿ"],
+  "ವಿಜಯಪುರ": ["ಬಿಜಾಪುರ", "ಗೋಳಗುಮ್ಮಟ", "ಸ್ಮಾರಕ", "ಉತ್ತರ ಕರ್ನಾಟಕ"],
+  "ಬಿಜಾಪುರ": ["ವಿಜಯಪುರ", "ಗೋಳಗುಮ್ಮಟ", "ಸ್ಮಾರಕ", "ಉತ್ತರ ಕರ್ನಾಟಕ"],
+  "ಕಲಬುರಗಿ": ["ಗುಲ್ಬರ್ಗಾ", "ಕೋಟೆ", "ಶರಣಬಸವೇಶ್ವರ", "ಉತ್ತರ ಕರ್ನಾಟಕ"],
+  "ಹುಬ್ಬಳ್ಳಿ": ["ಧಾರವಾಡ", "ಚನ್ನಮ್ಮ", "ಬಸ್ಸು", "ಮಾರುಕಟ್ಟೆ", "ಉತ್ತರ ಕರ್ನಾಟಕ"],
+  "ಮಂಗಳೂರು": ["ಪಿಲಿಕುಳ", "ಪ್ರಕೃತಿ", "ಹಸಿರು", "ಮರಗಳು", "ದಕ್ಷಿಣ ಕನ್ನಡ", "ಕರಾವಳಿ"],
   "ಗೊಂಬೆ": ["ಗೊಂಬೆಗಳು", "ಚನ್ನಪಟ್ಟಣ", "ಮರದ ಗೊಂಬೆಗಳು", "ಕಲಾವಿದ", "ಕರಕುಶಲ"],
   "ಗೊಂಬೆಗಳು": ["ಗೊಂಬೆ", "ಚನ್ನಪಟ್ಟಣ", "ಮರದ ಗೊಂಬೆಗಳು", "ಕಲಾವಿದ"]
 };
@@ -259,8 +268,9 @@ export async function generateSceneCaption({ imageBase64, imageMime = "image/jpe
   }
   parts.push({
     text: `You are transcribing and captioning a Karnataka cultural scene for the Chitra-Maathu dataset.
-1. If an audio recording (audio/wav) is attached, listen to the ENTIRE recording carefully and write the speaker's COMPLETE word-for-word spoken Kannada sentence in "verbatim_audio_transcript_kn" (do NOT just extract keywords—write the full sentence they spoke, even if it is in regional/colloquial dialect). Use the browser speech hint ("${hintText}") only as a fallback reference.
-2. In "corrected_caption_kn", rewrite the spoken description (and visual details from the image if attached) into a complete, grammatically standard, natural Kannada caption sentence (ಪ್ರಮಾಣ ಕನ್ನಡ ವಾಕ್ಯ).
+1. If an audio recording (audio/wav) is attached, listen to the ENTIRE recording carefully and write the speaker's COMPLETE word-for-word spoken Kannada sentence in "verbatim_audio_transcript_kn" (keep their colloquial/regional speech intact). Use the browser speech hint ("${hintText}") only as a fallback reference.
+2. In "corrected_caption_kn", transform the spoken description and visual scene into a polished, photojournalistic, grammatically standard Kannada caption (ಪ್ರಮಾಣ ಕನ್ನಡದ ಚಿತ್ರ ಶೀರ್ಷಿಕೆ). Do NOT just copy or pluck words from the voice recording—write a well-formed, descriptive literary caption like "ನಮ್ಮ ಕಾಲೇಜಿನ ಹತ್ತಿರದ ಪಾನಿಪೂರಿ ಅಂಗಡಿ" or "ದೀಪಗಳಿಂದ ಬೆಳಗಿದ ಮೈಸೂರು ಅರಮನೆ".
+3. In "tags_kn", generate 4 to 5 meaningful thematic/cultural Kannada hashtags (use underscore for two-word tags like "ಉತ್ತರ_ಕರ್ನಾಟಕ", "ಕರಾವಳಿ_ಜೀವನ", "ಬೀದಿ_ಆಹಾರ", "ಪಾರಂಪರಿಕ_ಸ್ಮಾರಕ")—NEVER just chop individual words out of the voice transcript.
 Return ONLY valid JSON in UTF-8 Kannada and English:
 {
   "title_kn": "ಚಿಕ್ಕ ಕನ್ನಡ ಶೀರ್ಷಿಕೆ",
@@ -269,7 +279,7 @@ Return ONLY valid JSON in UTF-8 Kannada and English:
   "corrected_caption_kn": "ವ್ಯಾಕರಣಬದ್ಧವಾದ, ಸ್ಪಷ್ಟ ಪ್ರಮಾಣ ಕನ್ನಡದ ಪೂರ್ಣ ಚಿತ್ರ ವಿವರಣೆ.",
   "transliteration_en": "Romanized English transliteration of corrected_caption_kn",
   "translation_en": "Accurate English translation of corrected_caption_kn",
-  "tags_kn": ["ಟ್ಯಾಗ್೧", "ಟ್ಯಾಗ್೨", "ಟ್ಯಾಗ್೩", "ಟ್ಯಾಗ್೪"]
+  "tags_kn": ["ವಿಷಯ_ಟ್ಯಾಗ್೧", "ಸಂಸ್ಕೃತಿ_ಟ್ಯಾಗ್೨", "ಜಿಲ್ಲೆ_ಟ್ಯಾಗ್೩", "ಜನಜೀವನ_ಟ್ಯಾಗ್೪"]
 }`
   });
 
