@@ -85,7 +85,7 @@ Each row represents a complete triplet with the following columns:
 
 ### 1. Geographic & Category Distribution
 - **Total Verified Triplets:** 82 triplets (`82` photos ≥ 1280px JPEG, `82` spoken Kannada audio files, `82` literary Kannada `.txt` captions).
-- **Categories (5):** `Streets` (`ರಸ್ತೆಗಳು`), `Food` (`ಆಹಾರ`), `Festivals` (`ಹಬ್ಬ-ಜಾತ್ರೆ`), `Nature` (`ಪ್ರಕೃತಿ`), `Building` (`ಕಟ್ಟಡಗಳು`).
+- **Categories (6):** `Streets` (`ರಸ್ತೆಗಳು`), `Food` (`ಆಹಾರ`), `Festivals` (`ಹಬ್ಬ-ಜಾತ್ರೆ`), `Culture` (`ಸಂಸ್ಕೃತಿ`), `Nature` (`ಪ್ರಕೃತಿ`), `Building` (`ಕಟ್ಟಡಗಳು`).
 - **Districts Covered (All 31 Districts of Karnataka):**
   - **Southern & Old Mysuru:** Bengaluru Urban, Bengaluru Rural, Mysuru, Mandya, Ramanagara, Chamarajanagar, Hassan, Tumakuru, Kolar, Chikkaballapura.
   - **Malenadu & Central:** Shivamogga, Chikkamagaluru, Kodagu, Davanagere, Chitradurga.

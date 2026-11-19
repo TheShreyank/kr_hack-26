@@ -22,11 +22,15 @@
     <div class="header-actions">
       <button id="openAddModalBtn" class="btn btn-primary">
         <span>➕</span>
-        <span class="kn-text">ಹೊಸ ಚಿತ್ರ ಸೇರಿಸಿ (Add Photo)</span>
+        <span class="kn-text">ಹೊಸ ಚಿತ್ರ ಸೇರಿಸಿ</span>
       </button>
       <button id="exportCsvBtn" class="btn btn-secondary" title="Download Metadata CSV (place, category, speaker ID)">
         <span>⬇️</span>
-        <span class="kn-text">ಡೇಟಾಸೆಟ್ CSV (Metadata CSV)</span>
+        <span class="kn-text">ಡೇಟಾಸೆಟ್ CSV</span>
+      </button>
+      <button id="helpScrollBtn" class="btn btn-secondary" title="How to use Chitra-Maathu">
+        <span class="kn-text">ಸಹಾಯ</span>
+        <span>❓</span>
       </button>
     </div>
   </header>
@@ -79,6 +83,7 @@
         <button class="cat-chip kn-text" data-category="Streets">ರಸ್ತೆಗಳು (Streets)</button>
         <button class="cat-chip kn-text" data-category="Food">ಆಹಾರ (Food)</button>
         <button class="cat-chip kn-text" data-category="Festivals">ಹಬ್ಬ-ಜಾತ್ರೆ (Festivals)</button>
+        <button class="cat-chip kn-text" data-category="Culture">ಸಂಸ್ಕೃತಿ (Culture)</button>
         <button class="cat-chip kn-text" data-category="Nature">ಪ್ರಕೃತಿ (Nature)</button>
         <button class="cat-chip kn-text" data-category="Building">ಕಟ್ಟಡಗಳು (Building)</button>
       </div>
@@ -107,11 +112,11 @@
       </div>
     </div>
 
-    <section class="how-to" aria-labelledby="howToTitle">
+    <section id="howToSection" class="how-to" aria-labelledby="howToTitle">
       <h2 id="howToTitle">How to use Chitra-Maathu</h2>
       <ol class="how-steps">
         <li><strong>Search by voice.</strong> Press <em>Speak</em>, say what you want in Kannada (for example "ದೇವಸ್ಥಾನದ ಹೂವಿನ ಅಂಗಡಿ ತೋರಿಸು"), then press it again to stop. Matching photos appear below.</li>
-        <li><strong>Or type / filter by category.</strong> Write your search in Kannada or English and press <em>Search</em>, tap one of the example chips, or filter by scene category (Streets, Food, Festivals, Nature, Building).</li>
+        <li><strong>Or type / filter by category.</strong> Write your search in Kannada or English and press <em>Search</em>, tap one of the example chips, or filter by scene category (Streets, Food, Festivals, Culture, Nature, Building).</li>
         <li><strong>Listen.</strong> Press <em>Play Audio</em> on any photo to hear its spoken Kannada description.</li>
         <li><strong>Add your own photo triplet.</strong> Press <em>Add Photo</em>, upload an image (drag on the image if you need to blur faces or number plates), record a 15–30 s spoken description in Kannada, pick the district, category, and Speaker ID, then save.</li>
         <li><strong>Download the Metadata CSV.</strong> Press <em>Metadata CSV</em> at the top to export every triplet row (place, category, speaker ID, photo, audio, and caption).</li>
@@ -204,6 +209,7 @@
               <option value="Streets">ರಸ್ತೆಗಳು (Streets)</option>
               <option value="Food">ಆಹಾರ (Food)</option>
               <option value="Festivals">ಹಬ್ಬ-ಜಾತ್ರೆ (Festivals)</option>
+              <option value="Culture">ಸಂಸ್ಕೃತಿ (Culture)</option>
               <option value="Nature">ಪ್ರಕೃತಿ (Nature)</option>
               <option value="Building">ಕಟ್ಟಡಗಳು (Building)</option>
             </select>

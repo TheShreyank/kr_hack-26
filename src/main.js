@@ -6,6 +6,7 @@ const CATEGORY_LABELS_KN = {
   Streets: "ರಸ್ತೆಗಳು (Streets)",
   Food: "ಆಹಾರ (Food)",
   Festivals: "ಹಬ್ಬ-ಜಾತ್ರೆ (Festivals)",
+  Culture: "ಸಂಸ್ಕೃತಿ (Culture)",
   Nature: "ಪ್ರಕೃತಿ (Nature)",
   Building: "ಕಟ್ಟಡಗಳು (Building)"
 };
@@ -48,6 +49,7 @@ const showAllBtn = document.getElementById("showAllBtn");
 const searchStatusText = document.getElementById("searchStatusText");
 const scenesGrid = document.getElementById("scenesGrid");
 const exportCsvBtn = document.getElementById("exportCsvBtn");
+const helpScrollBtn = document.getElementById("helpScrollBtn");
 
 const addSceneModal = document.getElementById("addSceneModal");
 const openAddModalBtn = document.getElementById("openAddModalBtn");
@@ -546,6 +548,12 @@ openAddModalBtn.addEventListener("click", openModal);
 closeAddModalBtn.addEventListener("click", closeModal);
 cancelModalBtn.addEventListener("click", closeModal);
 
+if (helpScrollBtn) {
+  helpScrollBtn.addEventListener("click", () => {
+    document.getElementById("howToSection")?.scrollIntoView({ behavior: "smooth" });
+  });
+}
+
 function blurCanvasRect(x1, y1, x2, y2, regionType = "face") {
   const startX = Math.max(0, Math.floor(x1));
   const startY = Math.max(0, Math.floor(y1));
@@ -703,6 +711,7 @@ const CATEGORY_DEFAULT_TAGS_KN = {
   Streets: ["ಬೀದಿ_ಜನಜೀವನ", "ನಗರ_ಸಂಚಾರ", "ಕರ್ನಾಟಕ_ದೃಶ್ಯ", "ದಿನನಿತ್ಯದ_ಬದುಕು"],
   Food: ["ಬೀದಿ_ಆಹಾರ", "ಕರ್ನಾಟಕ_ರುಚಿ", "ಸ್ಥಳೀಯ_ತಿಂಡಿ", "ಆಹಾರ_ಸಂಸ್ಕೃತಿ"],
   Festivals: ["ನಾಡಹಬ್ಬ_ಸಂಭ್ರಮ", "ಸಾಂಸ್ಕೃತಿಕ_ಪರಂಪರೆ", "ಹಬ್ಬ_ಜಾತ್ರೆ", "ಕರ್ನಾಟಕ_ಉತ್ಸವ"],
+  Culture: ["ಕರ್ನಾಟಕ_ಸಂಸ್ಕೃತಿ", "ಜಾನಪದ_ಕಲೆ", "ಕರಕುಶಲ_ಪರಂಪರೆ", "ದೇಶೀಯ_ಕಲೆ"],
   Nature: ["ಪ್ರಕೃತಿ_ಸೌಂದರ್ಯ", "ಕರಾವಳಿ_ಮಲೆನಾಡು", "ಹಸಿರು_ಪರಿಸರ", "ಕರ್ನಾಟಕ_ಪ್ರವಾಸ"],
   Building: ["ಪಾರಂಪರಿಕ_ಕಟ್ಟಡ", "ವಾಸ್ತುಶಿಲ್ಪ_ವೈಭವ", "ಕರ್ನಾಟಕ_ಸ್ಮಾರಕ", "ಐತಿಹಾಸಿಕ_ಕಟ್ಟಡ"]
 };
