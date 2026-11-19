@@ -1,19 +1,28 @@
+@import "@fontsource/redaction-35/400.css";
+@import "@fontsource/redaction-35/700.css";
+
 :root {
-  --bg-dark: #0c0f17;
-  --bg-card: #151a28;
-  --bg-elevated: #1e263b;
-  --border-subtle: rgba(255, 255, 255, 0.1);
-  --border-gold: rgba(245, 158, 11, 0.45);
-  --text-primary: #f8fafc;
-  --text-secondary: #cbd5e1;
-  --text-muted: #94a3b8;
-  --gold: #f59e0b;
-  --gold-light: #fbbf24;
-  --crimson: #e11d48;
-  --emerald: #10b981;
+  --bg-dark: #fbe3c8;
+  --bg-card: #ffffff;
+  --bg-elevated: #fff7ec;
+  --border-subtle: rgba(120, 53, 15, 0.12);
+  --border-gold: rgba(180, 83, 9, 0.35);
+  --text-primary: #2a1708;
+  --text-secondary: #5b3a1f;
+  --text-muted: #8a6a4c;
+  --gold: #c58a00;
+  --gold-light: #9a6700;
+  --vermilion: #d9391f;
+  --vermilion-dark: #b92b14;
+  --emerald: #1f8a5b;
   --radius-lg: 16px;
   --radius-md: 12px;
   --radius-sm: 8px;
+  --shadow-sm: 0 2px 6px rgba(120, 53, 15, 0.1);
+  --shadow-md: 0 6px 18px rgba(120, 53, 15, 0.14);
+  --shadow-lg: 0 14px 36px rgba(120, 53, 15, 0.2);
+  --font-body: "Google Sans", "Noto Sans Kannada", system-ui, sans-serif;
+  --font-heading: "Redaction 35", "Noto Sans Kannada", Georgia, serif;
 }
 
 * {
@@ -23,35 +32,45 @@
 }
 
 body {
-  font-family: "Inter", "Noto Sans Kannada", system-ui, -apple-system, sans-serif;
-  background: radial-gradient(circle at 15% 0%, #1e1b4b 0%, var(--bg-dark) 45%),
-              radial-gradient(circle at 85% 10%, #3b0764 0%, var(--bg-dark) 50%);
-  background-color: var(--bg-dark);
+  font-family: var(--font-body);
+  background:
+    radial-gradient(circle at 12% 0%, rgba(240, 120, 70, 0.38) 0%, transparent 50%),
+    radial-gradient(circle at 90% 8%, rgba(214, 160, 20, 0.42) 0%, transparent 52%),
+    linear-gradient(180deg, #fde7cf 0%, #f8d9a8 100%);
+  background-attachment: fixed;
   color: var(--text-primary);
   line-height: 1.6;
   min-height: 100vh;
 }
 
+h1, h2, h3 {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
 .kn-text {
-  font-family: "Noto Sans Kannada", "Inter", sans-serif;
+  font-family: var(--font-body);
 }
 
 .karnataka-ribbon {
-  height: 5px;
-  background: linear-gradient(90deg, #facc15 0%, #f59e0b 50%, #e11d48 50%, #be123c 100%);
+  height: 6px;
+  background: linear-gradient(90deg, #ffcc00 0%, #ffcc00 50%, #d7261e 50%, #d7261e 100%);
 }
 
 /* Header */
 .app-header {
   max-width: 1200px;
-  margin: 0 auto;
-  padding: 1.15rem 1.5rem;
+  margin: 1rem auto 0;
+  padding: 0.9rem 1.4rem;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  border-bottom: 1px solid var(--border-subtle);
+  background: #fff;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
 }
 
 .brand-group {
@@ -60,22 +79,20 @@ body {
   gap: 0.85rem;
 }
 
-.brand-logo {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #f59e0b, #e11d48);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.4rem;
-  font-weight: 800;
-  color: #fff;
+.brand-flag {
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
 }
 
-.brand-titles h1 {
-  font-size: 1.3rem;
+.brand-titles h1.brand-name {
+  font-family: "Noto Sans Kannada", sans-serif;
+  font-size: 1.55rem;
   font-weight: 700;
+  line-height: 1.2;
+  color: var(--vermilion-dark);
 }
 
 .brand-titles p {
@@ -98,23 +115,24 @@ body {
 
 /* Search Hero */
 .search-hero {
-  background: linear-gradient(145deg, rgba(30, 38, 59, 0.88), rgba(21, 26, 40, 0.96));
-  border: 1px solid var(--border-gold);
+  background: #fff;
   border-radius: var(--radius-lg);
-  padding: 1.6rem 1.75rem;
-  margin-bottom: 1.35rem;
+  box-shadow: var(--shadow-lg);
+  padding: 1.9rem 1.75rem;
+  margin-bottom: 1.5rem;
   text-align: center;
 }
 
 .search-hero h2 {
-  font-size: 1.45rem;
+  font-size: 2rem;
   margin-bottom: 0.2rem;
+  color: var(--text-primary);
 }
 
 .search-hero p {
   color: var(--text-secondary);
-  font-size: 0.9rem;
-  margin-bottom: 1.15rem;
+  font-size: 0.95rem;
+  margin-bottom: 1.2rem;
 }
 
 .search-bar-row {
@@ -131,15 +149,16 @@ body {
   min-width: 240px;
   display: flex;
   align-items: center;
-  background: #0b0e17;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: #fff;
+  border: 1px solid rgba(120, 53, 15, 0.22);
   border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
   padding: 0.35rem 0.75rem;
 }
 
 .search-input-wrap:focus-within {
-  border-color: var(--gold);
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18);
+  border-color: var(--vermilion);
+  box-shadow: 0 0 0 3px rgba(217, 57, 31, 0.15);
 }
 
 .search-icon {
@@ -154,7 +173,11 @@ body {
   font-size: 1.02rem;
   padding: 0.5rem 0.25rem;
   outline: none;
-  font-family: "Noto Sans Kannada", "Inter", sans-serif;
+  font-family: var(--font-body);
+}
+
+.search-input-wrap input::placeholder {
+  color: #a58a70;
 }
 
 .clear-input-btn {
@@ -176,44 +199,59 @@ body {
   border-radius: var(--radius-md);
   padding: 0.72rem 1.15rem;
   font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: 500;
+  font-family: var(--font-body);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  transition: all 0.18s ease;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 
 .btn-voice {
-  background: linear-gradient(135deg, #e11d48, #be123c);
+  background: var(--vermilion);
   color: #fff;
+}
+
+.btn-voice:hover {
+  background: var(--vermilion-dark);
 }
 
 .btn-voice.recording {
   animation: pulseRed 1.2s infinite;
-  background: #dc2626;
+  background: var(--vermilion-dark);
 }
 
 @keyframes pulseRed {
-  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-  70% { box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+  0% { box-shadow: 0 0 0 0 rgba(217, 57, 31, 0.6); }
+  70% { box-shadow: 0 0 0 12px rgba(217, 57, 31, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(217, 57, 31, 0); }
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  color: #0c0f17;
+  background: #e0a100;
+  color: #2a1708;
   font-weight: 700;
 }
 
+.btn-primary:hover {
+  background: #cb9000;
+}
+
 .btn-secondary {
-  background: var(--bg-elevated);
+  background: #fff;
   color: var(--text-primary);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border-gold);
 }
 
 .btn-secondary:hover {
-  border-color: var(--gold);
+  border-color: var(--vermilion);
 }
 
 .btn-sm {
@@ -224,11 +262,11 @@ body {
 
 /* Sample Query Chips */
 .query-chips {
-  margin-top: 1rem;
+  margin-top: 1.1rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.45rem;
+  gap: 0.5rem;
   flex-wrap: wrap;
 }
 
@@ -238,20 +276,23 @@ body {
 }
 
 .query-chip {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid var(--border-subtle);
+  background: #fff;
+  border: 1px solid var(--border-gold);
   color: var(--text-secondary);
-  padding: 0.3rem 0.75rem;
+  font-family: var(--font-body);
+  padding: 0.32rem 0.8rem;
   border-radius: 999px;
   font-size: 0.82rem;
   cursor: pointer;
+  box-shadow: var(--shadow-sm);
   transition: all 0.15s ease;
 }
 
 .query-chip:hover {
-  background: rgba(245, 158, 11, 0.18);
+  background: #fff3d6;
   border-color: var(--gold);
-  color: var(--gold-light);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-md);
 }
 
 /* Results Bar */
@@ -260,36 +301,36 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
-  font-size: 0.92rem;
-  color: var(--text-secondary);
+  font-size: 0.95rem;
+  color: var(--text-primary);
 }
 
 /* Cards Grid */
 .scenes-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 1.25rem;
+  gap: 1.35rem;
 }
 
 .scene-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
+  background: #fff;
   border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: transform 0.18s ease, border-color 0.18s ease;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
 .scene-card:hover {
-  transform: translateY(-2px);
-  border-color: var(--border-gold);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
 }
 
 .scene-media {
   position: relative;
   height: 220px;
-  background: #0f172a;
+  background: #f1dcc0;
   overflow: hidden;
 }
 
@@ -328,19 +369,18 @@ body {
 }
 
 .badge-pill {
-  background: rgba(12, 15, 23, 0.84);
-  backdrop-filter: blur(6px);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  color: #f8fafc;
+  background: #fff;
+  box-shadow: var(--shadow-sm);
+  color: var(--text-primary);
   font-size: 0.76rem;
   padding: 0.22rem 0.65rem;
   border-radius: 999px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .badge-score {
-  background: rgba(16, 185, 129, 0.92);
-  color: #052e16;
+  background: var(--emerald);
+  color: #fff;
   font-weight: 700;
 }
 
@@ -360,15 +400,15 @@ body {
 }
 
 .caption-box {
-  background: rgba(12, 15, 23, 0.55);
-  border-left: 3px solid var(--gold);
+  background: #fff8ec;
+  border-left: 3px solid var(--vermilion);
   padding: 0.65rem 0.8rem;
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
 
 .caption-box .text-kn {
   font-size: 0.96rem;
-  color: #f1f5f9;
+  color: var(--text-primary);
 }
 
 .caption-box .text-en {
@@ -380,7 +420,8 @@ body {
 .spoken-raw {
   font-size: 0.84rem;
   color: var(--text-secondary);
-  background: rgba(255, 255, 255, 0.03);
+  background: #fff;
+  box-shadow: inset 0 0 0 1px var(--border-subtle);
   padding: 0.5rem 0.7rem;
   border-radius: var(--radius-sm);
 }
@@ -394,22 +435,22 @@ body {
 
 .tag-kn {
   font-size: 0.75rem;
-  padding: 0.15rem 0.52rem;
+  padding: 0.15rem 0.55rem;
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.06);
+  background: #fdf0d5;
   color: var(--text-secondary);
 }
 
 .tag-kn.matched {
-  background: rgba(16, 185, 129, 0.2);
+  background: #dff3e8;
   border: 1px solid var(--emerald);
-  color: #6ee7b7;
+  color: #14663f;
   font-weight: 700;
 }
 
 .scene-footer {
-  padding: 0.8rem 1.15rem;
-  background: rgba(12, 15, 23, 0.45);
+  padding: 0.85rem 1.15rem;
+  background: #fff;
   border-top: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
@@ -420,23 +461,24 @@ body {
 .btn-audio {
   width: 100%;
   justify-content: center;
-  background: rgba(245, 158, 11, 0.16);
+  background: #fff3d6;
   border: 1px solid var(--border-gold);
-  color: var(--gold-light);
+  color: #7a4a00;
 }
 
 .btn-audio:hover,
 .btn-audio.playing {
-  background: var(--gold);
-  color: #0c0f17;
+  background: var(--vermilion);
+  border-color: var(--vermilion);
+  color: #fff;
 }
 
 /* Modal */
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(7, 10, 18, 0.82);
-  backdrop-filter: blur(5px);
+  background: rgba(60, 28, 8, 0.55);
+  backdrop-filter: blur(4px);
   display: none;
   align-items: center;
   justify-content: center;
@@ -449,14 +491,13 @@ body {
 }
 
 .modal-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-gold);
+  background: #fff;
   border-radius: var(--radius-lg);
   width: 100%;
   max-width: 560px;
   max-height: 92vh;
   overflow-y: auto;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65);
+  box-shadow: 0 24px 60px rgba(60, 28, 8, 0.4);
 }
 
 .modal-header {
@@ -468,7 +509,7 @@ body {
 }
 
 .modal-header h3 {
-  font-size: 1.1rem;
+  font-size: 1.35rem;
 }
 
 .close-modal-btn {
@@ -494,8 +535,8 @@ body {
 .upload-preview-box {
   width: 100%;
   height: 175px;
-  background: #0b0e17;
-  border: 1px dashed rgba(255, 255, 255, 0.22);
+  background: #fff8ec;
+  border: 1px dashed rgba(120, 53, 15, 0.35);
   border-radius: var(--radius-md);
   overflow: hidden;
   display: flex;
@@ -540,7 +581,7 @@ body {
 .form-group label {
   display: block;
   font-size: 0.83rem;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--text-secondary);
   margin-bottom: 0.35rem;
 }
@@ -553,30 +594,31 @@ body {
 
 .form-control {
   width: 100%;
-  background: #0b0e17;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: #fff;
+  border: 1px solid rgba(120, 53, 15, 0.22);
   border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
   color: var(--text-primary);
   padding: 0.6rem 0.75rem;
   font-size: 0.9rem;
-  font-family: "Noto Sans Kannada", "Inter", sans-serif;
+  font-family: var(--font-body);
 }
 
 .form-control:focus {
   outline: none;
-  border-color: var(--gold);
+  border-color: var(--vermilion);
 }
 
 .toast-banner {
   position: fixed;
   bottom: 1.5rem;
   right: 1.5rem;
-  background: #1e293b;
-  border: 1px solid var(--gold);
+  background: #fff;
+  border-left: 4px solid var(--vermilion);
   color: var(--text-primary);
   padding: 0.8rem 1.15rem;
   border-radius: 10px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--shadow-lg);
   z-index: 1000;
   display: none;
 }
