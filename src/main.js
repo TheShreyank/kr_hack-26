@@ -17,11 +17,13 @@ let activePlayButton = null;
 let isVoiceSearching = false;
 let searchWavRecorder = null;
 let searchSpeechRecognition = null;
+let searchFinalTranscript = "";
 
 // Modal State
 let isStudioRecording = false;
 let studioWavRecorder = null;
 let studioSpeechRecognition = null;
+let studioFinalTranscript = "";
 let recordedStudioWavBlob = null;
 let uploadedImageDataUrl = "";
 
@@ -64,7 +66,51 @@ function showToast(message) {
   }, 3200);
 }
 
-// Reliable Audio Playback (Plays native Kannada MP3 / recorded WAV, with guaranteed fallback)
+/**
+ * Helper to create a continuous Kannada SpeechRecognition session that does NOT
+ * cut off after a short pause or drop words across breaths.
+ */
+function createContinuousKannadaRecognition({ isActiveFn, onTranscriptUpdate }) {
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRec) return null;
+
+  const recognition = new SpeechRec();
+  recognition.lang = "kn-IN";
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 1;
+
+  let committedText = "";
+
+  recognition.onresult = (event) => {
+    let interimText = "";
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      const segment = event.results[i][0].transcript;
+      if (event.results[i].isFinal) {
+        committedText += (committedText ? " " : "") + segment.trim();
+      } else {
+        interimText += segment;
+      }
+    }
+    const combined = `${committedText} ${interimText}`.trim();
+    if (combined) {
+      onTranscriptUpdate(combined);
+    }
+  };
+
+  // Auto-restart if Chrome/Edge stops recognition on a natural pause while recording is still active
+  recognition.onend = () => {
+    if (isActiveFn()) {
+      try {
+        recognition.start();
+      } catch (_) {}
+    }
+  };
+
+  return recognition;
+}
+
+// Reliable Audio Playback
 function stopActiveAudio() {
   if (activeAudio) {
     activeAudio.pause();
@@ -82,7 +128,6 @@ function stopActiveAudio() {
 }
 
 function playSceneAudio(item, btnElement) {
-  // If clicking the already-playing button, stop it
   if (activePlayButton === btnElement) {
     stopActiveAudio();
     return;
@@ -296,30 +341,25 @@ voiceSearchBtn.addEventListener("click", async () => {
     try {
       stopActiveAudio();
       isVoiceSearching = true;
+      searchFinalTranscript = "";
       voiceSearchBtn.classList.add("recording");
       voiceSearchText.textContent = "ನಿಲ್ಲಿಸಿ (Stop)";
 
       searchWavRecorder = new Wav16kRecorder();
       await searchWavRecorder.start();
 
-      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (SpeechRec) {
-        searchSpeechRecognition = new SpeechRec();
-        searchSpeechRecognition.lang = "kn-IN";
-        searchSpeechRecognition.interimResults = true;
-        searchSpeechRecognition.onresult = (event) => {
-          let transcript = "";
-          for (let i = 0; i < event.results.length; i++) {
-            transcript += event.results[i][0].transcript;
-          }
-          if (transcript.trim()) {
-            searchQueryInput.value = transcript.trim();
-          }
-        };
+      searchSpeechRecognition = createContinuousKannadaRecognition({
+        isActiveFn: () => isVoiceSearching,
+        onTranscriptUpdate: (fullText) => {
+          searchFinalTranscript = fullText;
+          searchQueryInput.value = fullText;
+        }
+      });
+      if (searchSpeechRecognition) {
         searchSpeechRecognition.start();
       }
 
-      showToast("🎙️ ಕನ್ನಡದಲ್ಲಿ ಮಾತನಾಡಿ... (Speak now)");
+      showToast("🎙️ ಕನ್ನಡದಲ್ಲಿ ಮಾತನಾಡಿ... (Speak your full sentence)");
     } catch (err) {
       isVoiceSearching = false;
       voiceSearchBtn.classList.remove("recording");
@@ -344,7 +384,7 @@ voiceSearchBtn.addEventListener("click", async () => {
         audioBase64 = await blobToBase64(wavResult.wavBlob);
       }
       await executeSearch({
-        queryText: searchQueryInput.value,
+        queryText: searchFinalTranscript || searchQueryInput.value,
         audioBase64
       });
     }
@@ -383,31 +423,56 @@ imageUploadInput.addEventListener("change", (e) => {
   reader.readAsDataURL(file);
 });
 
+async function runAudioAndImageTranscription() {
+  autoCaptionBtn.disabled = true;
+  autoCaptionBtn.textContent = "⏳ ಧ್ವನಿ ಪಠ್ಯ ರಚಿಸಲಾಗುತ್ತಿದೆ...";
+
+  try {
+    const imageBase64 = uploadedImageDataUrl ? uploadedImageDataUrl.split(",")[1] : null;
+    const audioBase64 = recordedStudioWavBlob ? await blobToBase64(recordedStudioWavBlob) : null;
+
+    const annotated = await generateSceneCaption({
+      imageBase64,
+      imageMime: "image/jpeg",
+      audioBase64,
+      hintText: studioVerbatimInput.value
+    });
+
+    if (annotated.verbatim_audio_transcript_kn) {
+      studioVerbatimInput.value = annotated.verbatim_audio_transcript_kn;
+    }
+    if (annotated.corrected_caption_kn) {
+      studioCaptionInput.value = annotated.corrected_caption_kn;
+    }
+    showToast("✨ ನಿಮ್ಮ ಪೂರ್ಣ ಧ್ವನಿ ವಿವರಣೆ ಸಿದ್ಧವಾಗಿದೆ!");
+  } catch (err) {
+    showToast("⚠️ ದಯವಿಟ್ಟು ವಿವರಣೆಯನ್ನು ಪರಿಶೀಲಿಸಿ.");
+  } finally {
+    autoCaptionBtn.disabled = false;
+    autoCaptionBtn.innerHTML = `✨ <span class="kn-text">ಸ್ವಯಂ ವಿವರಣೆ ರಚಿಸಿ (Auto-Caption)</span>`;
+  }
+}
+
 studioRecordBtn.addEventListener("click", async () => {
   if (!isStudioRecording) {
     try {
       isStudioRecording = true;
+      studioFinalTranscript = "";
       studioRecordBtn.classList.add("recording");
       studioRecordBtn.innerHTML = `⏹️ <span class="kn-text">ನಿಲ್ಲಿಸಿ (Stop)</span>`;
-      studioAudioInfo.textContent = "ರೆಕಾರ್ಡ್ ಆಗುತ್ತಿದೆ... ಕನ್ನಡದಲ್ಲಿ ಮಾತನಾಡಿ";
+      studioAudioInfo.textContent = "ರೆಕಾರ್ಡ್ ಆಗುತ್ತಿದೆ... ಪೂರ್ಣ ವಾಕ್ಯವನ್ನು ಮಾತನಾಡಿ";
 
       studioWavRecorder = new Wav16kRecorder();
       await studioWavRecorder.start();
 
-      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (SpeechRec) {
-        studioSpeechRecognition = new SpeechRec();
-        studioSpeechRecognition.lang = "kn-IN";
-        studioSpeechRecognition.interimResults = true;
-        studioSpeechRecognition.onresult = (event) => {
-          let transcript = "";
-          for (let i = 0; i < event.results.length; i++) {
-            transcript += event.results[i][0].transcript;
-          }
-          if (transcript.trim()) {
-            studioVerbatimInput.value = transcript.trim();
-          }
-        };
+      studioSpeechRecognition = createContinuousKannadaRecognition({
+        isActiveFn: () => isStudioRecording,
+        onTranscriptUpdate: (fullText) => {
+          studioFinalTranscript = fullText;
+          studioVerbatimInput.value = fullText;
+        }
+      });
+      if (studioSpeechRecognition) {
         studioSpeechRecognition.start();
       }
     } catch (err) {
@@ -433,41 +498,17 @@ studioRecordBtn.addEventListener("click", async () => {
         recordedStudioWavBlob = result.wavBlob;
         studioAudioPreview.src = URL.createObjectURL(result.wavBlob);
         studioAudioPreview.style.display = "block";
-        studioAudioInfo.textContent = `✓ ಧ್ವನಿ ರೆಕಾರ್ಡ್ ಆಗಿದೆ (${result.durationSec}s)`;
+        studioAudioInfo.textContent = `✓ ಧ್ವನಿ ರೆಕಾರ್ಡ್ ಆಗಿದೆ (${result.durationSec}s) — ಪೂರ್ಣ ವಾಕ್ಯವನ್ನು ಪರಿವರ್ತಿಸಲಾಗುತ್ತಿದೆ...`;
+
+        // Automatically transcribe the full recorded WAV audio into complete Kannada sentences
+        await runAudioAndImageTranscription();
+        studioAudioInfo.textContent = `✓ ಧ್ವನಿ ರೆಕಾರ್ಡ್ ಮತ್ತು ಪಠ್ಯ ಸಿದ್ಧವಾಗಿದೆ (${result.durationSec}s)`;
       }
     }
   }
 });
 
-autoCaptionBtn.addEventListener("click", async () => {
-  autoCaptionBtn.disabled = true;
-  autoCaptionBtn.textContent = "⏳ ರಚಿಸಲಾಗುತ್ತಿದೆ...";
-
-  try {
-    const imageBase64 = uploadedImageDataUrl ? uploadedImageDataUrl.split(",")[1] : null;
-    const audioBase64 = recordedStudioWavBlob ? await blobToBase64(recordedStudioWavBlob) : null;
-
-    const annotated = await generateSceneCaption({
-      imageBase64,
-      imageMime: "image/jpeg",
-      audioBase64,
-      hintText: studioVerbatimInput.value
-    });
-
-    if (annotated.verbatim_audio_transcript_kn) {
-      studioVerbatimInput.value = annotated.verbatim_audio_transcript_kn;
-    }
-    if (annotated.corrected_caption_kn) {
-      studioCaptionInput.value = annotated.corrected_caption_kn;
-    }
-    showToast("✨ ಕನ್ನಡ ವಿವರಣೆ ಸಿದ್ಧವಾಗಿದೆ!");
-  } catch (err) {
-    showToast("⚠️ ದಯವಿಟ್ಟು ವಿವರಣೆಯನ್ನು ನಮೂದಿಸಿ.");
-  } finally {
-    autoCaptionBtn.disabled = false;
-    autoCaptionBtn.innerHTML = `✨ <span class="kn-text">ಸ್ವಯಂ ವಿವರಣೆ ರಚಿಸಿ (Auto-Caption)</span>`;
-  }
-});
+autoCaptionBtn.addEventListener("click", runAudioAndImageTranscription);
 
 addSceneToDatasetBtn.addEventListener("click", () => {
   const caption = studioCaptionInput.value.trim();

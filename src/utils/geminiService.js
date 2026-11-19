@@ -1,4 +1,8 @@
-const DEFAULT_MODEL = "gemini-2.5-flash";
+const MODEL_CANDIDATES = [
+  "gemini-3-flash-preview",
+  "gemma-4-31b-it",
+  "gemini-flash-latest"
+];
 
 const KANNADA_SYNONYM_MAP = {
   "ಹೂಮಾಲೆ": ["ಹೂವು", "ಮಾಲೆ", "ಸೇವಂತಿಗೆ", "ಮಲ್ಲಿಗೆ", "ಹೂವಿನ", "ಹಳದಿ"],
@@ -24,18 +28,9 @@ function getEnvApiKey() {
 }
 
 async function callModelEndpoint(apiKey, payload) {
-  const endpoints = apiKey.startsWith("AQ.")
-    ? [
-        `https://aiplatform.googleapis.com/v1/publishers/google/models/${DEFAULT_MODEL}:generateContent?key=${encodeURIComponent(apiKey)}`,
-        `https://generativelanguage.googleapis.com/v1beta/models/${DEFAULT_MODEL}:generateContent?key=${encodeURIComponent(apiKey)}`
-      ]
-    : [
-        `https://generativelanguage.googleapis.com/v1beta/models/${DEFAULT_MODEL}:generateContent?key=${encodeURIComponent(apiKey)}`,
-        `https://aiplatform.googleapis.com/v1/publishers/google/models/${DEFAULT_MODEL}:generateContent?key=${encodeURIComponent(apiKey)}`
-      ];
-
   let lastError = null;
-  for (const url of endpoints) {
+  for (const model of MODEL_CANDIDATES) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
     try {
       const response = await fetch(url, {
         method: "POST",
@@ -45,7 +40,7 @@ async function callModelEndpoint(apiKey, payload) {
       if (response.ok) {
         return await response.json();
       }
-      lastError = new Error(`HTTP ${response.status}`);
+      lastError = new Error(`HTTP ${response.status} on ${model}`);
     } catch (err) {
       lastError = err;
     }
@@ -159,11 +154,11 @@ export async function searchScenes({ queryText = "", audioBase64 = null, dataset
 
   const systemInstruction = `You are Chitra-Maathu (ಚಿತ್ರ-ಮಾತು), a Kannada voice-to-image retrieval system.
 Given a user's query (either as spoken Kannada audio or Kannada/English text) and a catalog of Karnataka scenes:
-1. If audio is provided, transcribe the spoken Kannada query accurately into UTF-8 Kannada in "transcribedQuery". If text is provided, keep "transcribedQuery" as the query text.
+1. If audio is provided, transcribe the complete spoken Kannada sentence accurately into UTF-8 Kannada in "transcribedQuery" (do not drop words or only pick keywords—write the full sentence spoken by the user). If only text is provided, keep "transcribedQuery" as the query text.
 2. Rank the matching scenes from the catalog by semantic relevance (score 0.15 to 0.99).
 3. Return ONLY valid JSON:
 {
-  "transcribedQuery": "ಕನ್ನಡದ ಪ್ರಶ್ನೆ",
+  "transcribedQuery": "ಬಳಕೆದಾರರು ಹೇಳಿದ ಪೂರ್ಣ ಕನ್ನಡ ವಾಕ್ಯ",
   "matches": [
     {
       "id": "CM-KA-001",
@@ -183,7 +178,7 @@ Given a user's query (either as spoken Kannada audio or Kannada/English text) an
     });
   }
   parts.push({
-    text: `User Query Text (if any): "${queryText}"\n\nScene Catalog JSON:\n${JSON.stringify(catalogSummary)}`
+    text: `Live browser speech draft (may be incomplete): "${queryText}"\n\nScene Catalog JSON:\n${JSON.stringify(catalogSummary)}`
   });
 
   try {
@@ -255,13 +250,15 @@ export async function generateSceneCaption({ imageBase64, imageMime = "image/jpe
     });
   }
   parts.push({
-    text: `Analyze this Karnataka image and optional spoken Kannada voice recording (speaker hint: "${hintText}").
+    text: `You are transcribing and captioning a Karnataka cultural scene for the Chitra-Maathu dataset.
+1. If an audio recording (audio/wav) is attached, listen to the ENTIRE recording carefully and write the speaker's COMPLETE word-for-word spoken Kannada sentence in "verbatim_audio_transcript_kn" (do NOT just extract keywords—write the full sentence they spoke, even if it is in regional/colloquial dialect). Use the browser speech hint ("${hintText}") only as a fallback reference.
+2. In "corrected_caption_kn", rewrite the spoken description (and visual details from the image if attached) into a complete, grammatically standard, natural Kannada caption sentence (ಪ್ರಮಾಣ ಕನ್ನಡ ವಾಕ್ಯ).
 Return ONLY valid JSON in UTF-8 Kannada and English:
 {
   "title_kn": "ಚಿಕ್ಕ ಕನ್ನಡ ಶೀರ್ಷಿಕೆ",
   "title_en": "Short English Title",
-  "verbatim_audio_transcript_kn": "ಆಡಿಯೋದಲ್ಲಿ ಹೇಳಿದ ಯಥಾವತ್ ಕನ್ನಡ ವಾಕ್ಯ",
-  "corrected_caption_kn": "ವ್ಯಾಕರಣಬದ್ಧವಾದ, ಸ್ಪಷ್ಟ ಪ್ರಮಾಣ ಕನ್ನಡದ ಚಿತ್ರ ವಿವರಣೆ.",
+  "verbatim_audio_transcript_kn": "ಆಡಿಯೋದಲ್ಲಿ ಹೇಳಿದ ಪೂರ್ಣ ಯಥಾವತ್ ಕನ್ನಡ ವಾಕ್ಯ",
+  "corrected_caption_kn": "ವ್ಯಾಕರಣಬದ್ಧವಾದ, ಸ್ಪಷ್ಟ ಪ್ರಮಾಣ ಕನ್ನಡದ ಪೂರ್ಣ ಚಿತ್ರ ವಿವರಣೆ.",
   "transliteration_en": "Romanized English transliteration of corrected_caption_kn",
   "translation_en": "Accurate English translation of corrected_caption_kn",
   "tags_kn": ["ಟ್ಯಾಗ್೧", "ಟ್ಯಾಗ್೨", "ಟ್ಯಾಗ್೩", "ಟ್ಯಾಗ್೪"]
