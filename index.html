@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="kn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ಚಿತ್ರ-ಮಾತು (Chitra-Maathu) | Modalapada 2.0 Kannada Multimodal AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Kannada:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+  <div class="karnataka-ribbon"></div>
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="brand-group">
+      <div class="brand-logo" aria-hidden="true">ಚಿ</div>
+      <div class="brand-titles">
+        <h1>
+          <span class="kn-text">ಚಿತ್ರ-ಮಾತು</span> · Chitra-Maathu
+          <span class="badge-track">Challenge 03 · IMAGE + VOICE</span>
+        </h1>
+        <p>Modalapada 2.0 (ಮೊದಲಪದ - II) · ಚಿತ್ರ, ಧ್ವನಿ ಮತ್ತು ವಿವರಣೆ · Living Kannada Multimodal Dataset</p>
+      </div>
+    </div>
+
+    <div class="header-controls">
+      <div class="api-key-box" title="Enter your Gemini API Key for live Multimodal Audio & Vision AI">
+        <span id="geminiStatusDot" class="status-dot"></span>
+        <input
+          type="password"
+          id="geminiApiKeyInput"
+          placeholder="Gemini API Key (Optional)"
+          autocomplete="off"
+        />
+        <button id="saveApiKeyBtn" class="btn btn-secondary btn-sm">Save Key</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <nav class="nav-tabs" aria-label="Main sections">
+    <button class="tab-btn active" data-tab="tab-search">
+      <span>🎙️</span>
+      <span class="kn-text">ಧ್ವನಿ ಹುಡುಕಾಟ</span> (Voice & Scene Search)
+    </button>
+    <button class="tab-btn" data-tab="tab-studio">
+      <span>📸</span>
+      <span class="kn-text">ಡೇಟಾಸೆಟ್ ಸ್ಟುಡಿಯೋ</span> (Add Photo + 16kHz Voice + Privacy Blur)
+    </button>
+    <button class="tab-btn" data-tab="tab-dataset">
+      <span>🗂️</span>
+      <span class="kn-text">ಡೇಟಾಸೆಟ್ ಪರಿಶೀಲನೆ & ರಫ್ತು</span> (Dataset Spec & Export)
+    </button>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- TAB 1: VOICE & TEXT SEARCH -->
+    <section id="tab-search" class="tab-panel active">
+      <div class="voice-search-hero">
+        <div class="hero-top">
+          <div>
+            <h2 class="kn-text">ಕನ್ನಡದಲ್ಲಿ ಮಾತನಾಡಿ, ಸರಿಯಾದ ಚಿತ್ರವನ್ನು ಹುಡುಕಿ</h2>
+            <p>Speak in Kannada (16 kHz WAV Multimodal Audio / Web Speech <code>kn-IN</code>) or click a sample query below to retrieve matching Karnataka cultural scenes.</p>
+          </div>
+          <span id="activeEngineBadge" class="badge-pill">Engine: Kannada Linguistic + Gemini Multimodal</span>
+        </div>
+
+        <div class="search-bar-row">
+          <div class="search-input-wrap">
+            <span style="margin-right: 0.4rem;">🔍</span>
+            <input
+              type="text"
+              id="searchQueryInput"
+              placeholder="ಉದಾಹರಣೆಗೆ: “ಹಳದಿ ಹೂಮಾಲೆ ಇರುವ ಮಳಿಗೆ ತೋರಿಸು”..."
+              aria-label="Search Karnataka scenes in Kannada"
+            />
+          </div>
+          <button id="voiceSearchBtn" class="btn btn-voice">
+            <span id="voiceSearchIcon">🎙️</span>
+            <span id="voiceSearchText" class="kn-text">ಕನ್ನಡದಲ್ಲಿ ಮಾತನಾಡಿ (Speak)</span>
+          </button>
+          <button id="runSearchBtn" class="btn btn-primary">
+            <span class="kn-text">ಹುಡುಕು (Search)</span>
+          </button>
+          <button id="resetSearchBtn" class="btn btn-secondary">
+            <span>Reset</span>
+          </button>
+        </div>
+
+        <div class="query-chips">
+          <span class="chip-label">Sample Spoken Queries (ಒತ್ತಿ ಪರೀಕ್ಷಿಸಿ):</span>
+          <button class="query-chip kn-text" data-query="ಹಳದಿ ಹೂಮಾಲೆ ಇರುವ ಮಳಿಗೆ ತೋರಿಸು">“ಹಳದಿ ಹೂಮಾಲೆ ಇರುವ ಮಳಿಗೆ ತೋರಿಸು”</button>
+          <button class="query-chip kn-text" data-query="ಬಿಸಿ ಫಿಲ್ಟರ್ ಕಾಫಿ ಮತ್ತು ಮಸಾಲೆ ದೋಸೆ">“ಬಿಸಿ ಫಿಲ್ಟರ್ ಕಾಫಿ ಮತ್ತು ಮಸಾಲೆ ದೋಸೆ”</button>
+          <button class="query-chip kn-text" data-query="ಹಂಪಿಯ ಕಲ್ಲಿನ ರಥದ ಚಿತ್ರ ಹುಡುಕು">“ಹಂಪಿಯ ಕಲ್ಲಿನ ರಥದ ಚಿತ್ರ ಹುಡುಕು”</button>
+          <button class="query-chip kn-text" data-query="ಯಕ್ಷಗಾನ ಕಲಾವಿದನ ಬಣ್ಣದ ವೇಷ ತೋರಿಸು">“ಯಕ್ಷಗಾನ ಕಲಾವಿದನ ಬಣ್ಣದ ವೇಷ ತೋರಿಸು”</button>
+          <button class="query-chip kn-text" data-query="ಚನ್ನಪಟ್ಟಣದ ಬಣ್ಣ ಬಣ್ಣದ ಮರದ ಗೊಂಬೆಗಳು">“ಚನ್ನಪಟ್ಟಣದ ಬಣ್ಣ ಬಣ್ಣದ ಮರದ ಗೊಂಬೆಗಳು”</button>
+          <button class="query-chip kn-text" data-query="ಸಂತೆಯಲ್ಲಿ ತಾಜಾ ತರಕಾರಿ ಮಾರುವ ಅಂಗಡಿ">“ಸಂತೆಯಲ್ಲಿ ತಾಜಾ ತರಕಾರಿ ಮಾರುವ ಅಂಗಡಿ”</button>
+        </div>
+      </div>
+
+      <div class="search-status-bar">
+        <div id="searchStatusText" class="kn-text">
+          ಒಟ್ಟು <strong>6</strong> ಕರ್ನಾಟಕದ ದೃಶ್ಯಗಳು ಪ್ರದರ್ಶನದಲ್ಲಿವೆ (Showing all scenes)
+        </div>
+        <div style="color: var(--text-muted); font-size: 0.8rem;">
+          Format: <strong>UTF-8 Kannada</strong> · <strong>16 kHz Mono WAV</strong> · <strong>1280px+ JPEG</strong>
+        </div>
+      </div>
+
+      <div id="scenesGrid" class="scenes-grid"></div>
+    </section>
+
+    <!-- TAB 2: DATASET COLLECTION STUDIO -->
+    <section id="tab-studio" class="tab-panel">
+      <div class="studio-grid">
+        <!-- Left Column: Image + Privacy Blur Canvas -->
+        <div class="panel-card">
+          <h3>📸 1. ಚಿತ್ರ ಮತ್ತು ಗೌಪ್ಯತೆ ರಕ್ಷಣೆ (Photo & Privacy Blur Tool)</h3>
+          <p class="panel-subtitle">
+            Upload a real photo of Karnataka life (<code>JPEG 1280px+</code>). Drag across faces or vehicle number plates on the canvas to blur them per Modalapada 2.0 rules.
+          </p>
+
+          <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 0.85rem;">
+            <label class="btn btn-secondary btn-sm" style="cursor: pointer;">
+              <span>📂 Upload JPEG Photo</span>
+              <input type="file" id="imageUploadInput" accept="image/jpeg,image/png,image/webp" style="display: none;" />
+            </label>
+            <button id="loadSamplePhotoBtn" class="btn btn-secondary btn-sm">🎨 Load Demo Karnataka Scene</button>
+            <button id="clearBlurBtn" class="btn btn-secondary btn-sm">↩️ Reset Blur</button>
+            <span id="imageResolutionBadge" class="badge-pill" style="margin-left: auto;">1400x933 JPEG ✓</span>
+          </div>
+
+          <div class="canvas-wrapper">
+            <canvas id="privacyCanvas" width="1400" height="933"></canvas>
+          </div>
+          <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.55rem;">
+            💡 <strong>Privacy Rule Check:</strong> Click & drag on the photo above to apply Gaussian privacy blur over any identifiable faces or license plates.
+          </p>
+        </div>
+
+        <!-- Right Column: 16kHz WAV Voice Recording + Gemini Multimodal Captioning -->
+        <div class="panel-card">
+          <h3>🎙️ 2. ಧ್ವನಿ ಮುದ್ರಣ ಮತ್ತು ಕನ್ನಡ ವಿವರಣೆ (16 kHz WAV + Caption)</h3>
+          <p class="panel-subtitle">
+            Record a spoken Kannada description in <strong>16 kHz Mono PCM WAV</strong> and use Gemini Multimodal AI to generate a clean, standard Kannada caption.
+          </p>
+
+          <!-- Audio Recorder Box -->
+          <div style="background: rgba(12, 15, 23, 0.65); padding: 1rem; border-radius: 12px; border: 1px solid var(--border-subtle); margin-bottom: 1rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap;">
+              <div>
+                <strong class="kn-text" style="font-size: 0.92rem;">ಧ್ವನಿ ಮುದ್ರಣ (16 kHz Mono WAV)</strong>
+                <div id="studioAudioInfo" style="font-size: 0.78rem; color: var(--text-muted);">Ready to record microphone audio at 16,000 Hz mono</div>
+              </div>
+              <div style="display: flex; gap: 0.5rem;">
+                <button id="studioRecordBtn" class="btn btn-voice btn-sm">🎙️ Record 16kHz WAV</button>
+                <button id="downloadRecordedWavBtn" class="btn btn-secondary btn-sm" disabled>⬇️ .WAV</button>
+              </div>
+            </div>
+            <div class="audio-meter-wrap">
+              <div id="studioAudioMeter" class="audio-meter-fill"></div>
+            </div>
+            <audio id="studioAudioPreview" controls style="width: 100%; height: 34px; margin-top: 0.35rem; display: none;"></audio>
+          </div>
+
+          <div class="form-group">
+            <label for="studioRegionInput">ಪ್ರದೇಶ / ಜಿಲ್ಲೆ (Region in Karnataka)</label>
+            <input type="text" id="studioRegionInput" class="form-control" value="ಮೈಸೂರು / ಬೆಂಗಳೂರು (Mysuru / Bengaluru)" />
+          </div>
+
+          <div class="form-group">
+            <label for="studioVerbatimInput">ಮೂಲ ಧ್ವನಿ ಪಠ್ಯ (Verbatim Spoken Kannada Transcript)</label>
+            <textarea id="studioVerbatimInput" class="form-control" rows="2" placeholder="ಉದಾ: ಇಲ್ಲಿ ಜಾತ್ರೆ ಒಳಗೆ ಹಳದಿ ಹೂಮಾಲೆಗಳನ್ನ ತೂಗು ಹಾಕಿದ್ದಾರೆ..."></textarea>
+          </div>
+
+          <div style="margin-bottom: 1rem;">
+            <button id="geminiAutoAnnotateBtn" class="btn btn-primary btn-sm">
+              ✨ Auto-Generate Corrected Caption & Tags with Gemini Multimodal
+            </button>
+          </div>
+
+          <div class="form-group">
+            <label for="studioCaptionInput">ಪರಿಷ್ಕೃತ ಪ್ರಮಾಣ ಕನ್ನಡ ವಿವರಣೆ (Corrected Standard Kannada Caption - UTF-8)</label>
+            <textarea id="studioCaptionInput" class="form-control" rows="2" placeholder="ಉದಾ: ಜಾತ್ರೆಯ ಹೂವಿನ ಮಳಿಗೆಯಲ್ಲಿ ಕಟ್ಟಿರುವ ತಾಜಾ ಹಳದಿ ಸೇವಂತಿಗೆ ಹೂಮಾಲೆಗಳು."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="studioTagsInput">ಕನ್ನಡ ಟ್ಯಾಗ್‌ಗಳು (Comma-separated Kannada Tags)</label>
+            <input type="text" id="studioTagsInput" class="form-control" placeholder="ಹಳದಿ, ಹೂಮಾಲೆ, ಮಳಿಗೆ, ಜಾತ್ರೆ, ಹೂವು" />
+          </div>
+
+          <div class="form-group" style="display: flex; align-items: center; gap: 0.55rem; font-size: 0.85rem;">
+            <input type="checkbox" id="studioConsentCheckbox" checked style="width: 17px; height: 17px;" />
+            <label for="studioConsentCheckbox" style="margin: 0; cursor: pointer;">
+              <strong>ಒಪ್ಪಿಗೆ ಮತ್ತು ಗೌಪ್ಯತೆ (Consent & Privacy Verified):</strong> Speaker consent obtained & faces/number plates blurred.
+            </label>
+          </div>
+
+          <button id="addSceneToDatasetBtn" class="btn btn-primary" style="width: 100%; justify-content: center;">
+            ➕ ಡೇಟಾಸೆಟ್‌ಗೆ ಸೇರಿಸಿ (Add Scene Pair to Living Dataset)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: DATASET VALIDATION & EXPORT -->
+    <section id="tab-dataset" class="tab-panel">
+      <div class="spec-checklist">
+        <div class="spec-item">
+          <div class="spec-icon">✓</div>
+          <div>
+            <strong>UTF-8 Kannada Unicode</strong>
+            <div style="font-size: 0.78rem; color: var(--text-muted);">100% compliant (No legacy ASCII fonts)</div>
+          </div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-icon">✓</div>
+          <div>
+            <strong>16 kHz Mono PCM WAV</strong>
+            <div style="font-size: 0.78rem; color: var(--text-muted);">RIFF/WAVE 16,000 Hz 16-bit 1-ch</div>
+          </div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-icon">✓</div>
+          <div>
+            <strong>JPEG 1280px+ Resolution</strong>
+            <div style="font-size: 0.78rem; color: var(--text-muted);">High-res scene imagery verified</div>
+          </div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-icon">✓</div>
+          <div>
+            <strong>Consent & Privacy Blur</strong>
+            <div style="font-size: 0.78rem; color: var(--text-muted);">Faces & plates blurred, consent logged</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+        <div>
+          <h3 class="kn-text">ಚಿತ್ರ-ಮಾತು ಮುಕ್ತ ಕನ್ನಡ ಡೇಟಾಸೆಟ್ (Open Kannada Multimodal Dataset)</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">
+            Each row pairs a Karnataka photo (<code>1280px+ JPEG</code>), a spoken description (<code>16 kHz mono WAV</code>), verbatim transcript, and corrected standard Kannada caption.
+          </p>
+        </div>
+        <div style="display: flex; gap: 0.65rem; flex-wrap: wrap;">
+          <button id="exportJsonBtn" class="btn btn-primary btn-sm">⬇️ Export Dataset JSON (UTF-8)</button>
+          <button id="exportSampleWavBtn" class="btn btn-secondary btn-sm">🔊 Download Sample 16kHz Mono WAV</button>
+        </div>
+      </div>
+
+      <div class="dataset-table-wrap">
+        <table class="dataset-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>ಪ್ರದೇಶ (Region)</th>
+              <th>ಮೂಲ ಧ್ವನಿ ಪಠ್ಯ (Spoken Transcript)</th>
+              <th>ಪರಿಷ್ಕೃತ ಕನ್ನಡ ವಿವರಣೆ (Corrected Caption)</th>
+              <th>Specs & Privacy</th>
+              <th>Audio</th>
+            </tr>
+          </thead>
+          <tbody id="datasetTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div id="toastBanner" class="toast-banner" role="status" aria-live="polite"></div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
