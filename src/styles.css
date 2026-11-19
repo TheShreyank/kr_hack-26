@@ -305,12 +305,12 @@ h1, h2, h3 {
   align-items: center;
   justify-content: center;
   gap: 0.65rem;
-  margin: 1.15rem auto 1.45rem auto;
-  padding: 0.55rem 1.15rem;
-  background: rgba(255, 255, 255, 0.85);
+  margin: 2.5rem auto 1.25rem auto;
+  padding: 0.65rem 1.25rem;
+  background: #ffffff;
   border: 1px solid var(--border-gold);
   border-radius: 999px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-md);
   max-width: 900px;
   flex-wrap: wrap;
 }
@@ -733,7 +733,7 @@ h1, h2, h3 {
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
   padding: 1.6rem 1.75rem;
-  margin-top: 2.5rem;
+  margin-top: 1.25rem;
 }
 
 .how-to h2 {

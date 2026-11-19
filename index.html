@@ -72,26 +72,10 @@
         <button class="query-chip kn-text" data-query="ಹುಬ್ಬಳ್ಳಿ ನಗರದ ರಸ್ತೆ ಮತ್ತು ಹೋಟೆಲ್">“ಹುಬ್ಬಳ್ಳಿ ನಗರದ ರಸ್ತೆ”</button>
         <button class="query-chip kn-text" data-query="ಮಣಿಪಾಲ ಉಡುಪಿ ಮಲ್ಪೆ ಕಡಲತೀರ">“ಮಣಿಪಾಲ ಮಲ್ಪೆ ಕಡಲತೀರ (Beach)”</button>
         <button class="query-chip kn-text" data-query="ಕೊಡಗಿನ ಕಾಫಿ ತೋಟ ತೋರಿಸು">“ಕೊಡಗಿನ ಕಾಫಿ ತೋಟ (Coorg)”</button>
+        <button class="query-chip kn-text" data-query="ಶಿವಮೊಗ್ಗದ ಜೋಗ ಜಲಪಾತ ತೋರಿಸು">“ಶಿವಮೊಗ್ಗದ ಜೋಗ ಜಲಪಾತ”</button>
       </div>
     </section>
 
-    <!-- Pipeline Visualizer (Slide 1 Alignment) -->
-    <div class="pipeline-container">
-      <span class="pipeline-heading">PIPELINE:</span>
-      <div class="pipeline-steps">
-        <span class="pipeline-step"><span class="step-num">1</span> 📸 Photo</span>
-        <span class="pipeline-sep">›</span>
-        <span class="pipeline-step"><span class="step-num">2</span> 🎙️ Speak in Kannada</span>
-        <span class="pipeline-sep">›</span>
-        <span class="pipeline-step"><span class="step-num">3</span> 🤖 Kannada ASR</span>
-        <span class="pipeline-sep">›</span>
-        <span class="pipeline-step"><span class="step-num">4</span> ✍️ Caption</span>
-        <span class="pipeline-sep">›</span>
-        <span class="pipeline-step pipeline-active"><span class="step-num">5</span> 🔍 Voice search</span>
-      </div>
-    </div>
-
-    <!-- Category Filter & Results Count Row -->
     <div class="results-bar">
       <div class="category-filters" id="categoryFilterBar">
         <button class="cat-chip active kn-text" data-category="All">ಎಲ್ಲಾ (All)</button>
@@ -102,17 +86,30 @@
         <button class="cat-chip kn-text" data-category="Building">ಕಟ್ಟಡಗಳು (Building)</button>
       </div>
       <div style="display: flex; align-items: center; gap: 0.65rem;">
-        <div id="searchStatusText" class="kn-text">ಎಲ್ಲಾ ಚಿತ್ರಗಳು (8)</div>
+        <div id="searchStatusText" class="kn-text">ಎಲ್ಲಾ ಚಿತ್ರಗಳು (24)</div>
         <button id="showAllBtn" class="btn btn-secondary btn-sm" style="display: none;">
           <span class="kn-text">ಎಲ್ಲಾ ಚಿತ್ರಗಳನ್ನು ತೋರಿಸು (Show All)</span>
         </button>
       </div>
     </div>
 
-    <!-- Photo Gallery Grid -->
     <div id="scenesGrid" class="scenes-grid"></div>
 
-    <!-- How to use -->
+    <div class="pipeline-container">
+      <span class="pipeline-heading">PIPELINE</span>
+      <div class="pipeline-steps">
+        <span class="pipeline-step"><span class="step-num">1</span> Photo</span>
+        <span class="pipeline-sep">›</span>
+        <span class="pipeline-step"><span class="step-num">2</span> Speak in Kannada</span>
+        <span class="pipeline-sep">›</span>
+        <span class="pipeline-step"><span class="step-num">3</span> Kannada ASR</span>
+        <span class="pipeline-sep">›</span>
+        <span class="pipeline-step"><span class="step-num">4</span> Caption</span>
+        <span class="pipeline-sep">›</span>
+        <span class="pipeline-step pipeline-active"><span class="step-num">5</span> Voice search</span>
+      </div>
+    </div>
+
     <section class="how-to" aria-labelledby="howToTitle">
       <h2 id="howToTitle">How to use Chitra-Maathu</h2>
       <ol class="how-steps">
