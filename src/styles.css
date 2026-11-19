@@ -21,8 +21,8 @@
   --shadow-sm: 0 2px 6px rgba(120, 53, 15, 0.1);
   --shadow-md: 0 6px 18px rgba(120, 53, 15, 0.14);
   --shadow-lg: 0 14px 36px rgba(120, 53, 15, 0.2);
-  --font-body: "Google Sans", "Noto Sans Kannada", system-ui, sans-serif;
-  --font-heading: "Redaction 35", "Noto Sans Kannada", Georgia, serif;
+  --font-body: "Google Sans", "Benne", system-ui, sans-serif;
+  --font-heading: "Redaction 35", "Benne", Georgia, serif;
 }
 
 * {
@@ -51,11 +51,6 @@ h1, h2, h3 {
 
 .kn-text {
   font-family: var(--font-body);
-}
-
-.karnataka-ribbon {
-  height: 6px;
-  background: linear-gradient(90deg, #ffcc00 0%, #ffcc00 50%, #d7261e 50%, #d7261e 100%);
 }
 
 /* Header */
@@ -88,10 +83,17 @@ h1, h2, h3 {
 }
 
 .brand-titles h1.brand-name {
-  font-family: "Noto Sans Kannada", sans-serif;
-  font-size: 1.55rem;
-  font-weight: 700;
-  line-height: 1.2;
+  font-size: 1.6rem;
+  line-height: 1.25;
+  color: var(--text-primary);
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.brand-kn {
+  font-family: "Benne", serif;
   color: var(--vermilion-dark);
 }
 
@@ -235,13 +237,15 @@ h1, h2, h3 {
 }
 
 .btn-primary {
-  background: #e0a100;
+  background: #ffcc00;
   color: #2a1708;
   font-weight: 700;
+  box-shadow: none;
 }
 
 .btn-primary:hover {
-  background: #cb9000;
+  background: #ffd633;
+  box-shadow: none;
 }
 
 .btn-secondary {
@@ -625,4 +629,30 @@ h1, h2, h3 {
 
 .toast-banner.show {
   display: block;
+}
+
+/* How to use */
+.how-to {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 1.6rem 1.75rem;
+  margin-top: 2.5rem;
+}
+
+.how-to h2 {
+  font-size: 1.6rem;
+  margin-bottom: 0.8rem;
+}
+
+.how-steps {
+  padding-left: 1.3rem;
+  display: grid;
+  gap: 0.55rem;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.how-steps strong {
+  color: var(--text-primary);
 }
