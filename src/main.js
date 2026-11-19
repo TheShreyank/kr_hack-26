@@ -979,5 +979,16 @@ exportCsvBtn.addEventListener("click", () => {
   showToast("⬇️ ಡೇಟಾಸೆಟ್ CSV ಡೌನ್‌ಲೋಡ್ ಆಗಿದೆ (metadata.csv)");
 });
 
+const scrollTopBtn = document.getElementById("scrollTopBtn");
+if (scrollTopBtn) {
+  window.addEventListener("scroll", () => {
+    scrollTopBtn.classList.toggle("visible", window.scrollY > 240);
+  }, { passive: true });
+
+  scrollTopBtn.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+}
+
 updateStatusText(false);
 renderScenesGrid(currentResults, false);
