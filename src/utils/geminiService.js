@@ -67,8 +67,9 @@ async function callModelEndpoint(apiKey, payload) {
 }
 
 /**
- * Automatically detects all visible human faces and vehicle license/number plates in an uploaded photo
- * using Gemini Vision 2D bounding boxes (0-1000 scale: [ymin, xmin, ymax, xmax]).
+ * Smartly detects ONLY clearly identifiable human faces and readable vehicle license plates
+ * in an uploaded photo. Returns an empty array [] if there are no faces or number plates
+ * (e.g., forts, buildings, food close-ups, landscapes).
  */
 export async function detectFacesAndPlates({ imageBase64, imageMime = "image/jpeg" }) {
   const apiKey = getEnvApiKey();
@@ -87,14 +88,19 @@ export async function detectFacesAndPlates({ imageBase64, imageMime = "image/jpe
               }
             },
             {
-              text: `For privacy anonymization, locate the bounding boxes of:
-1. The head/face area of every visible person in the foreground or crowd.
-2. Every visible vehicle number plate / registration plate.
-Return ONLY valid JSON with normalized 0-1000 coordinates [ymin, xmin, ymax, xmax]:
+              text: `Analyze this image carefully for privacy blurring.
+RULES:
+1. First check if there are any CLEARLY IDENTIFIABLE human faces (where facial features like eyes/nose/mouth are clearly visible) OR any READABLE vehicle license/registration number plates (with alphanumeric characters on a vehicle).
+2. If the photo shows only buildings, forts, monuments, food, trees, nature, or tiny distant silhouettes where faces/plates are NOT identifiable, you MUST return {"has_sensitive_regions": false, "regions": []}.
+3. NEVER box windows, arches, doors, shop signboards, food items, or whole people's bodies. ONLY box the tight face region itself or the tight vehicle number plate rectangle.
+4. Only include detections where you are at least 90% confident (confidence >= 0.90).
+
+Return ONLY valid JSON:
 {
+  "has_sensitive_regions": true,
   "regions": [
-    { "box_2d": [120, 340, 220, 440], "label": "head" },
-    { "box_2d": [710, 480, 760, 610], "label": "plate" }
+    { "box_2d": [ymin, xmin, ymax, xmax], "type": "face", "confidence": 0.96 },
+    { "box_2d": [ymin, xmin, ymax, xmax], "type": "plate", "confidence": 0.95 }
   ]
 }`
             }
@@ -103,14 +109,33 @@ Return ONLY valid JSON with normalized 0-1000 coordinates [ymin, xmin, ymax, xma
       ],
       generationConfig: {
         responseMimeType: "application/json",
-        temperature: 0.1
+        temperature: 0.0
       }
     });
 
     const rawJson = data?.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
     const parsed = JSON.parse(rawJson);
-    if (Array.isArray(parsed)) return parsed;
-    return Array.isArray(parsed.regions) ? parsed.regions : [];
+    const rawList = Array.isArray(parsed)
+      ? parsed
+      : parsed?.has_sensitive_regions === false
+      ? []
+      : Array.isArray(parsed?.regions)
+      ? parsed.regions
+      : [];
+
+    // Filter out low-confidence or oversized false-positive boxes
+    return rawList.filter((r) => {
+      const box = r?.box_2d;
+      if (!Array.isArray(box) || box.length !== 4) return false;
+      const [ymin, xmin, ymax, xmax] = box;
+      const wNorm = xmax - xmin;
+      const hNorm = ymax - ymin;
+      const areaFraction = (wNorm * hNorm) / (1000 * 1000);
+      const conf = typeof r.confidence === "number" ? r.confidence : 0.9;
+      const validType = r.type === "face" || r.type === "plate";
+      // A face or number plate should have positive size, < 10% of total image area, and confidence >= 0.88
+      return validType && conf >= 0.88 && wNorm > 10 && hNorm > 10 && areaFraction < 0.10;
+    });
   } catch (err) {
     return [];
   }

@@ -1,72 +1,72 @@
 #!/usr/bin/env python3
 """
-Deterministic Face & License Plate Blurring for Chitra-Maathu Dataset Photos using Pillow GaussianBlur.
-Blurs all visible human faces (frontal & profile) and vehicle registration plates in public/photos/ and dataset/photos/.
+Surgical Face & Number Plate Blurring for Chitra-Maathu Dataset Photos.
+Restores clean originals for photos that have no faces or readable number plates
+(CM-KA-002, CM-KA-005, CM-KA-007, CM-KA-012, CM-KA-019), and applies tight
+feathered Gaussian blurs ONLY to exact visible faces and vehicle number plates.
 """
 
 import os
 import shutil
-from PIL import Image, ImageFilter
+from PIL import Image, ImageDraw, ImageFilter
 
-# Verified foreground face & vehicle plate boxes [ymin, xmin, ymax, xmax] (0-1000 scale)
-VERIFIED_BOXES = {
+# Exact, visually verified bounding boxes [ymin, xmin, ymax, xmax] (0-1000 scale)
+# Photos with empty list [] have NO identifiable faces or readable number plates and stay 100% unblurred.
+SURGICAL_BOXES = {
     "CM-KA-001": [
-        # Foreground shoppers & vendors at Devaraja Market, Mysuru
-        [440, 560, 720, 740],
-        [480, 750, 720, 910],
-        [630, 810, 880, 975],
-        [470, 680, 620, 770],
-        [430, 850, 580, 945],
-        [450, 935, 620, 1000]
+        # 7 visible faces in Devaraja Market, Mysuru
+        ("face", [515, 220, 610, 325]),
+        ("face", [475, 442, 540, 525]),
+        ("face", [510, 555, 588, 655]),
+        ("face", [458, 718, 512, 782]),
+        ("face", [462, 800, 518, 862]),
+        ("face", [558, 725, 658, 845]),
+        ("face", [595, 922, 738, 1000])
     ],
-    "CM-KA-002": [
-        # Dosa vendor hands/background faces at VV Puram
-        [50, 150, 260, 420]
-    ],
+    "CM-KA-002": [],  # Pure Avarebele Dosa close-up — no faces or plates
     "CM-KA-004": [
-        # Channapatna artisans faces
-        [180, 240, 420, 460],
-        [220, 560, 440, 740]
+        # 2 artisans facing forward in Channapatna workshop
+        ("face", [395, 355, 458, 405]),
+        ("face", [355, 696, 422, 746])
     ],
-    "CM-KA-005": [
-        # Auto rickshaw driver & front/rear number plate area
-        [380, 440, 520, 580],
-        [640, 430, 760, 590]
-    ],
+    "CM-KA-005": [],  # Namma Yatri roof sign close-up — no identifiable faces or readable plates
     "CM-KA-006": [
-        # BMTC bus front number plate & driver windshield area + pedestrian faces
-        [520, 180, 650, 380],
-        [720, 210, 810, 340],
-        [460, 730, 600, 890]
+        # 4 readable vehicle number plates on BMTC bus (KA 57 F 1596) & Autos (KA 05 AB 3961)
+        ("plate", [574, 441, 598, 472]),
+        ("plate", [748, 620, 806, 696]),
+        ("plate", [824, 713, 898, 798]),
+        ("plate", [454, 892, 470, 910])
     ],
-    "CM-KA-007": [
-        # Roadside chaat vendor face area
-        [80, 260, 320, 640]
-    ],
+    "CM-KA-007": [],  # Pure Kach Dabeli snack bowl close-up — no faces or plates
     "CM-KA-008": [
-        # Pedestrians & vendors outside Devaraja Market entrance
-        [580, 100, 760, 920]
+        # Small scooter front plates & pedestrian face at Devaraja Market entrance
+        ("face", [636, 894, 658, 912]),
+        ("plate", [728, 344, 742, 365]),
+        ("plate", [718, 476, 730, 490]),
+        ("plate", [722, 624, 735, 638])
     ],
     "CM-KA-011": [
-        # Commercial street shoppers crowd faces band
-        [480, 80, 740, 940]
+        # Commercial Street white car rear number plate & foreground faces
+        ("plate", [948, 388, 964, 418]),
+        ("face", [945, 554, 998, 596]),
+        ("face", [888, 138, 915, 156])
     ],
-    "CM-KA-012": [
-        # VV Puram night sweet stall vendor/customer faces
-        [120, 180, 380, 820]
-    ],
+    "CM-KA-012": [],  # Pure Badam Milk & Pheni bowls close-up — no faces or plates
     "CM-KA-014": [
-        # Candid auto-rickshaw driver face & plate
-        [260, 360, 560, 640]
+        # Two yellow KA 02 B 9275 number plates on the parked auto-rickshaw (front & side)
+        ("plate", [480, 232, 574, 302]),
+        ("plate", [656, 594, 710, 634])
     ],
     "CM-KA-018": [
-        # Kalaburagi railway station commuters & auto plates
-        [480, 120, 740, 880]
+        # Rear license plates on parked auto-rickshaws outside Kalaburagi railway station
+        ("plate", [968, 82, 1000, 110]),
+        ("plate", [902, 137, 926, 153]),
+        ("plate", [856, 307, 876, 325]),
+        ("plate", [798, 392, 816, 405]),
+        ("plate", [808, 837, 828, 855]),
+        ("plate", [812, 769, 830, 783])
     ],
-    "CM-KA-019": [
-        # Hubballi street riders/pedestrians & two-wheeler plates
-        [520, 100, 790, 900]
-    ]
+    "CM-KA-019": []   # Pure Hotel Swathi building facade — no faces or plates
 }
 
 
@@ -74,32 +74,50 @@ def blur_photos():
     os.makedirs("public/photos", exist_ok=True)
     os.makedirs("dataset/photos", exist_ok=True)
 
-    for fname in sorted(os.listdir("public/photos")):
-        if not fname.endswith(".jpg"):
-            continue
-        cid = fname.replace(".jpg", "")
-        fpath = os.path.join("public/photos", fname)
+    for cid, regions in SURGICAL_BOXES.items():
+        orig_path = os.path.join("public/photos_orig", f"{cid}.jpg")
+        out_pub = os.path.join("public/photos", f"{cid}.jpg")
+        out_ds = os.path.join("dataset/photos", f"{cid}.jpg")
 
-        pil_img = Image.open(fpath).convert("RGB")
+        if not os.path.exists(orig_path):
+            continue
+
+        if not regions:
+            # Copy clean unblurred original directly
+            shutil.copy2(orig_path, out_pub)
+            shutil.copy2(orig_path, out_ds)
+            print(f"{cid}: 0 faces/plates -> restored 100% clean original")
+            continue
+
+        pil_img = Image.open(orig_path).convert("RGB")
         w, h = pil_img.size
 
-        boxes_px = []
-        for (ymin, xmin, ymax, xmax) in VERIFIED_BOXES.get(cid, []):
-            x1 = max(0, int((xmin / 1000.0) * w))
-            y1 = max(0, int((ymin / 1000.0) * h))
-            x2 = min(w, int((xmax / 1000.0) * w))
-            y2 = min(h, int((ymax / 1000.0) * h))
-            boxes_px.append((x1, y1, x2, y2))
+        for kind, (ymin, xmin, ymax, xmax) in regions:
+            x1 = max(0, int((xmin / 1000.0) * w) - 4)
+            y1 = max(0, int((ymin / 1000.0) * h) - 4)
+            x2 = min(w, int((xmax / 1000.0) * w) + 4)
+            y2 = min(h, int((ymax / 1000.0) * h) + 4)
+            bw, bh = x2 - x1, y2 - y1
+            if bw <= 2 or bh <= 2:
+                continue
 
-        for (x1, y1, x2, y2) in boxes_px:
-            if x2 > x1 and y2 > y1:
-                crop = pil_img.crop((x1, y1, x2, y2))
-                blurred = crop.filter(ImageFilter.GaussianBlur(radius=32))
-                pil_img.paste(blurred, (x1, y1))
+            crop = pil_img.crop((x1, y1, x2, y2))
+            blurred = crop.filter(ImageFilter.GaussianBlur(radius=22))
 
-        pil_img.save(fpath, "JPEG", quality=88)
-        shutil.copy2(fpath, os.path.join("dataset/photos", fname))
-        print(f"{cid}: blurred {len(boxes_px)} face/plate regions -> {fpath}")
+            # Use smooth elliptical mask for faces and rounded mask for number plates
+            mask = Image.new("L", (bw, bh), 0)
+            draw = ImageDraw.Draw(mask)
+            if kind == "face":
+                draw.ellipse([0, 0, bw, bh], fill=255)
+            else:
+                draw.rounded_rectangle([0, 0, bw, bh], radius=6, fill=255)
+            mask = mask.filter(ImageFilter.GaussianBlur(radius=3))
+
+            pil_img.paste(blurred, (x1, y1), mask)
+
+        pil_img.save(out_pub, "JPEG", quality=90)
+        shutil.copy2(out_pub, out_ds)
+        print(f"{cid}: surgically blurred {len(regions)} exact face/plate regions")
 
 
 if __name__ == "__main__":

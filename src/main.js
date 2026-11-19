@@ -297,6 +297,9 @@ function renderScenesGrid(results, isFiltered = false) {
         <button class="btn btn-sm btn-audio listen-caption-btn">
           🔊 <span class="kn-text">ಧ್ವನಿ ಕೇಳಿ (Play Audio)</span>
         </button>
+        <button class="btn btn-sm btn-edit edit-scene-btn" title="Edit this entry">
+          ✏️ <span class="kn-text">ಸಂಪಾದಿಸಿ</span>
+        </button>
         <button class="btn btn-sm btn-delete delete-scene-btn" title="Delete this entry">
           🗑️ <span class="kn-text">ಅಳಿಸಿ</span>
         </button>
@@ -306,6 +309,11 @@ function renderScenesGrid(results, isFiltered = false) {
     const playBtn = card.querySelector(".listen-caption-btn");
     playBtn.addEventListener("click", () => {
       playSceneAudio(item, playBtn);
+    });
+
+    const editBtn = card.querySelector(".edit-scene-btn");
+    editBtn.addEventListener("click", () => {
+      openEditModal(item);
     });
 
     const deleteBtn = card.querySelector(".delete-scene-btn");
@@ -466,13 +474,86 @@ voiceSearchBtn.addEventListener("click", async () => {
 });
 
 // ======================================================
-// ADD PHOTO & VOICE TRIPLET MODAL
+// ADD / EDIT PHOTO & VOICE TRIPLET MODAL
 // ======================================================
+
+let editingSceneId = null;
+const modalTitleEl = document.getElementById("modalTitle");
+
+function resetModalFormFields() {
+  studioRegionInput.value = "";
+  studioCategorySelect.value = "Streets";
+  studioVerbatimInput.value = "";
+  studioCaptionInput.value = "";
+  recordedStudioWavBlob = null;
+  recordedDurationSec = 0;
+  hasUploadedPhoto = false;
+  uploadedOriginalImage = null;
+  lastAnnotatedData = null;
+  uploadCanvas.style.display = "none";
+  resetBlurBtn.style.display = "none";
+  uploadPlaceholder.style.display = "block";
+  studioAudioPreview.style.display = "none";
+  studioAudioPreview.src = "";
+  updateTimerDisplay(0);
+  studioAudioInfo.textContent = "ಮೈಕ್ ಒತ್ತಿ ಚಿತ್ರದ ಬಗ್ಗೆ ಕನ್ನಡದಲ್ಲಿ 15–30 ಸೆಕೆಂಡ್ ಮಾತನಾಡಿ";
+}
 
 function openModal() {
   stopActiveAudio();
-  studioRegionInput.value = "";
-  studioCategorySelect.value = "Streets";
+  editingSceneId = null;
+  resetModalFormFields();
+  if (modalTitleEl) {
+    modalTitleEl.textContent = "ಹೊಸ ಚಿತ್ರ ಮತ್ತು ಧ್ವನಿ ಸೇರಿಸಿ (Add Photo Triplet)";
+  }
+  addSceneToDatasetBtn.innerHTML = `<span class="kn-text">ಸೇರಿಸಿ (Save Triplet)</span>`;
+  addSceneModal.classList.add("open");
+  addSceneModal.setAttribute("aria-hidden", "false");
+}
+
+function openEditModal(item) {
+  stopActiveAudio();
+  editingSceneId = item.id;
+  resetModalFormFields();
+
+  if (modalTitleEl) {
+    modalTitleEl.textContent = `ಚಿತ್ರ ಮತ್ತು ವಿವರಣೆ ಸಂಪಾದಿಸಿ (Edit ${item.id})`;
+  }
+  addSceneToDatasetBtn.innerHTML = `<span class="kn-text">ಬದಲಾವಣೆ ಉಳಿಸಿ (Save Changes)</span>`;
+
+  studioRegionInput.value = item.region || "";
+  studioCategorySelect.value = item.category || "Streets";
+  studioSpeakerInput.value = item.speaker_id || "SPK-01";
+  studioVerbatimInput.value = item.verbatim_audio_transcript_kn || "";
+  studioCaptionInput.value = item.corrected_caption_kn || "";
+  recordedDurationSec = item.duration_sec || 18.0;
+
+  const existingAudio = item.custom_wav_url || item.audio_url;
+  if (existingAudio) {
+    studioAudioPreview.src = existingAudio;
+    studioAudioPreview.style.display = "block";
+    studioAudioInfo.textContent = `✓ ಪ್ರಸ್ತುತ ಧ್ವನಿ (${recordedDurationSec}s) — ಬೇಕಿದ್ದರೆ ಹೊಸದಾಗಿ ರೆಕಾರ್ಡ್ ಮಾಡಿ`;
+  }
+
+  // Load current card image onto the canvas so user can edit/blur or upload a new photo
+  if (item.image_url) {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      const targetW = Math.max(1280, img.width);
+      const targetH = Math.round((img.height / img.width) * targetW);
+      uploadCanvas.width = targetW;
+      uploadCanvas.height = targetH;
+      uploadCtx.drawImage(img, 0, 0, targetW, targetH);
+      uploadedOriginalImage = img;
+      hasUploadedPhoto = true;
+      uploadCanvas.style.display = "block";
+      uploadPlaceholder.style.display = "none";
+      resetBlurBtn.style.display = "inline-flex";
+    };
+    img.src = item.image_url;
+  }
+
   addSceneModal.classList.add("open");
   addSceneModal.setAttribute("aria-hidden", "false");
 }
@@ -486,26 +567,33 @@ openAddModalBtn.addEventListener("click", openModal);
 closeAddModalBtn.addEventListener("click", closeModal);
 cancelModalBtn.addEventListener("click", closeModal);
 
-// Helper to blur a rectangular region [x1, y1, x2, y2] on uploadCanvas
-function blurCanvasRect(x1, y1, x2, y2) {
+// Helper to smoothly Gaussian-blur a face (ellipse) or number plate (rounded box) on uploadCanvas
+function blurCanvasRect(x1, y1, x2, y2, regionType = "face") {
   const startX = Math.max(0, Math.floor(x1));
   const startY = Math.max(0, Math.floor(y1));
   const endX = Math.min(uploadCanvas.width, Math.ceil(x2));
   const endY = Math.min(uploadCanvas.height, Math.ceil(y2));
   const w = endX - startX;
   const h = endY - startY;
-  if (w <= 2 || h <= 2) return;
+  if (w <= 4 || h <= 4) return;
 
-  const blockSize = Math.max(12, Math.round(Math.min(w, h) / 6));
-  for (let px = startX; px < endX; px += blockSize) {
-    for (let py = startY; py < endY; py += blockSize) {
-      const sampleX = Math.min(uploadCanvas.width - 1, px + Math.floor(blockSize / 2));
-      const sampleY = Math.min(uploadCanvas.height - 1, py + Math.floor(blockSize / 2));
-      const pixel = uploadCtx.getImageData(sampleX, sampleY, 1, 1).data;
-      uploadCtx.fillStyle = `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
-      uploadCtx.fillRect(px, py, Math.min(blockSize, endX - px), Math.min(blockSize, endY - py));
-    }
+  // Snapshot current canvas into an offscreen canvas to apply true Gaussian blur
+  const offCanvas = document.createElement("canvas");
+  offCanvas.width = uploadCanvas.width;
+  offCanvas.height = uploadCanvas.height;
+  offCanvas.getContext("2d").drawImage(uploadCanvas, 0, 0);
+
+  uploadCtx.save();
+  uploadCtx.beginPath();
+  if (regionType === "face") {
+    uploadCtx.ellipse(startX + w / 2, startY + h / 2, w / 2, h / 2, 0, 0, Math.PI * 2);
+  } else {
+    uploadCtx.rect(startX, startY, w, h);
   }
+  uploadCtx.clip();
+  uploadCtx.filter = "blur(18px)";
+  uploadCtx.drawImage(offCanvas, 0, 0);
+  uploadCtx.restore();
 }
 
 // Automatically detect and blur any faces or vehicle number plates in the uploaded photo
@@ -544,13 +632,14 @@ async function autoBlurUploadedPhoto() {
 
   for (const r of regions) {
     const box = Array.isArray(r) ? r : r?.box_2d;
+    const rType = r?.type === "plate" ? "plate" : "face";
     if (Array.isArray(box) && box.length === 4) {
       const [ymin, xmin, ymax, xmax] = box;
-      const x1 = (xmin / 1000) * uploadCanvas.width - 12;
-      const y1 = (ymin / 1000) * uploadCanvas.height - 12;
-      const x2 = (xmax / 1000) * uploadCanvas.width + 12;
-      const y2 = (ymax / 1000) * uploadCanvas.height + 12;
-      blurCanvasRect(x1, y1, x2, y2);
+      const x1 = (xmin / 1000) * uploadCanvas.width - 6;
+      const y1 = (ymin / 1000) * uploadCanvas.height - 6;
+      const x2 = (xmax / 1000) * uploadCanvas.width + 6;
+      const y2 = (ymax / 1000) * uploadCanvas.height + 6;
+      blurCanvasRect(x1, y1, x2, y2, rType);
       blurredCount++;
     }
   }
@@ -772,15 +861,61 @@ addSceneToDatasetBtn.addEventListener("click", () => {
   }
 
   const finalCaption = caption || verbatim;
-  const newId = `CM-KA-${String(dataset.length + 1).padStart(3, "0")}`;
   const selectedCategory = studioCategorySelect.value || "Streets";
   const speakerId = studioSpeakerInput.value.trim() || "SPK-01";
   localStorage.setItem("chitra_maathu_speaker_id", speakerId);
 
-  const imageDataUrl = hasUploadedPhoto
-    ? uploadCanvas.toDataURL("image/jpeg", 0.92)
-    : "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=1400&q=85";
+  let imageDataUrl = "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=1400&q=85";
+  if (hasUploadedPhoto) {
+    try {
+      imageDataUrl = uploadCanvas.toDataURL("image/jpeg", 0.92);
+    } catch (_) {
+      const existing = dataset.find((d) => d.id === editingSceneId);
+      if (existing?.image_url) imageDataUrl = existing.image_url;
+    }
+  } else if (editingSceneId) {
+    const existing = dataset.find((d) => d.id === editingSceneId);
+    if (existing?.image_url) imageDataUrl = existing.image_url;
+  }
 
+  if (editingSceneId) {
+    const idx = dataset.findIndex((d) => d.id === editingSceneId);
+    if (idx !== -1) {
+      const prev = dataset[idx];
+      const updatedTags =
+        lastAnnotatedData?.tags_kn && lastAnnotatedData.tags_kn.length
+          ? lastAnnotatedData.tags_kn
+          : prev.tags_kn || CATEGORY_DEFAULT_TAGS_KN[selectedCategory];
+
+      dataset[idx] = {
+        ...prev,
+        title_kn: lastAnnotatedData?.title_kn || (finalCaption !== prev.corrected_caption_kn ? finalCaption.slice(0, 38) : prev.title_kn),
+        title_en: lastAnnotatedData?.title_en || prev.title_en,
+        region: studioRegionInput.value.trim() || prev.region || "ಮೈಸೂರು (Mysuru)",
+        category: selectedCategory,
+        category_kn: CATEGORY_LABELS_KN[selectedCategory] || selectedCategory,
+        speaker_id: speakerId,
+        duration_sec: recordedDurationSec || prev.duration_sec || 18.0,
+        verbatim_audio_transcript_kn: verbatim || finalCaption,
+        corrected_caption_kn: finalCaption,
+        transliteration_en: lastAnnotatedData?.transliteration_en || prev.transliteration_en || finalCaption,
+        translation_en: lastAnnotatedData?.translation_en || prev.translation_en,
+        tags_kn: updatedTags,
+        image_url: imageDataUrl,
+        custom_wav_url: recordedStudioWavBlob ? URL.createObjectURL(recordedStudioWavBlob) : prev.custom_wav_url
+      };
+    }
+
+    const editedId = editingSceneId;
+    editingSceneId = null;
+    resetModalFormFields();
+    resetSearch();
+    closeModal();
+    showToast(`✅ ಬದಲಾವಣೆಗಳನ್ನು ಉಳಿಸಲಾಗಿದೆ (${editedId} updated)!`);
+    return;
+  }
+
+  const newId = `CM-KA-${String(dataset.length + 1).padStart(3, "0")}`;
   const curatedTags =
     lastAnnotatedData?.tags_kn && lastAnnotatedData.tags_kn.length
       ? lastAnnotatedData.tags_kn
@@ -807,27 +942,10 @@ addSceneToDatasetBtn.addEventListener("click", () => {
     fallback_theme: { bg1: "#78350f", bg2: "#d97706", icon: "📷", label: finalCaption.slice(0, 24) }
   };
 
-  lastAnnotatedData = null;
-
+  resetModalFormFields();
   dataset.unshift(newEntry);
   resetSearch();
   closeModal();
-
-  // Reset modal fields
-  studioRegionInput.value = "";
-  studioCategorySelect.value = "Streets";
-  studioVerbatimInput.value = "";
-  studioCaptionInput.value = "";
-  recordedStudioWavBlob = null;
-  recordedDurationSec = 0;
-  hasUploadedPhoto = false;
-  uploadedOriginalImage = null;
-  uploadCanvas.style.display = "none";
-  resetBlurBtn.style.display = "none";
-  uploadPlaceholder.style.display = "block";
-  studioAudioPreview.style.display = "none";
-  updateTimerDisplay(0);
-  studioAudioInfo.textContent = "ಮೈಕ್ ಒತ್ತಿ ಚಿತ್ರದ ಬಗ್ಗೆ ಕನ್ನಡದಲ್ಲಿ 15–30 ಸೆಕೆಂಡ್ ಮಾತನಾಡಿ";
 
   showToast(`✅ ಟ್ರಿಪ್ಲೆಟ್ ${newId} ಸೇರಿಸಲಾಗಿದೆ!`);
 });

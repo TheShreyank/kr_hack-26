@@ -477,6 +477,19 @@ h1, h2, h3 {
   color: #fff;
 }
 
+.btn-edit {
+  background: #fff;
+  border: 1px solid var(--border-gold);
+  color: var(--text-primary);
+  padding: 0.45rem 0.7rem;
+  flex-shrink: 0;
+}
+
+.btn-edit:hover {
+  background: #fff3d6;
+  border-color: var(--gold);
+}
+
 .btn-delete {
   background: #fff;
   border: 1px solid rgba(217, 57, 31, 0.3);
