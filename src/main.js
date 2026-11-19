@@ -1,6 +1,6 @@
 import { SEED_DATASET } from "./data/seedDataset.js";
 import { Wav16kRecorder, blobToBase64 } from "./utils/wavEncoder.js";
-import { searchScenes, generateSceneCaption } from "./utils/geminiService.js";
+import { searchScenes, generateSceneCaption, detectFacesAndPlates } from "./utils/geminiService.js";
 
 const CATEGORY_LABELS_KN = {
   Streets: "ರಸ್ತೆಗಳು (Streets)",
@@ -486,14 +486,88 @@ openAddModalBtn.addEventListener("click", openModal);
 closeAddModalBtn.addEventListener("click", closeModal);
 cancelModalBtn.addEventListener("click", closeModal);
 
-// Upload Photo onto 1280px+ Canvas + Drag-to-Blur Faces/Plates
+// Helper to blur a rectangular region [x1, y1, x2, y2] on uploadCanvas
+function blurCanvasRect(x1, y1, x2, y2) {
+  const startX = Math.max(0, Math.floor(x1));
+  const startY = Math.max(0, Math.floor(y1));
+  const endX = Math.min(uploadCanvas.width, Math.ceil(x2));
+  const endY = Math.min(uploadCanvas.height, Math.ceil(y2));
+  const w = endX - startX;
+  const h = endY - startY;
+  if (w <= 2 || h <= 2) return;
+
+  const blockSize = Math.max(12, Math.round(Math.min(w, h) / 6));
+  for (let px = startX; px < endX; px += blockSize) {
+    for (let py = startY; py < endY; py += blockSize) {
+      const sampleX = Math.min(uploadCanvas.width - 1, px + Math.floor(blockSize / 2));
+      const sampleY = Math.min(uploadCanvas.height - 1, py + Math.floor(blockSize / 2));
+      const pixel = uploadCtx.getImageData(sampleX, sampleY, 1, 1).data;
+      uploadCtx.fillStyle = `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
+      uploadCtx.fillRect(px, py, Math.min(blockSize, endX - px), Math.min(blockSize, endY - py));
+    }
+  }
+}
+
+// Automatically detect and blur any faces or vehicle number plates in the uploaded photo
+async function autoBlurUploadedPhoto() {
+  if (!hasUploadedPhoto) return;
+
+  // Create a lightweight 800px thumbnail for fast vision detection (<1.5s)
+  const tempCanvas = document.createElement("canvas");
+  const maxDim = 800;
+  const scale = Math.min(1, maxDim / Math.max(uploadCanvas.width, uploadCanvas.height));
+  tempCanvas.width = Math.round(uploadCanvas.width * scale);
+  tempCanvas.height = Math.round(uploadCanvas.height * scale);
+  tempCanvas.getContext("2d").drawImage(uploadCanvas, 0, 0, tempCanvas.width, tempCanvas.height);
+  const rawBase64 = tempCanvas.toDataURL("image/jpeg", 0.78).split(",")[1];
+
+  let blurredCount = 0;
+
+  // 1. Try browser FaceDetector API if supported
+  if ("FaceDetector" in window) {
+    try {
+      const detector = new window.FaceDetector();
+      const faces = await detector.detect(uploadCanvas);
+      for (const f of faces) {
+        const b = f.boundingBox;
+        blurCanvasRect(b.x - 10, b.y - 10, b.x + b.width + 10, b.y + b.height + 10);
+        blurredCount++;
+      }
+    } catch (_) {}
+  }
+
+  // 2. Use Vision bounding-box detection for all faces (front/profile) and vehicle number plates
+  const regions = await detectFacesAndPlates({
+    imageBase64: rawBase64,
+    imageMime: "image/jpeg"
+  });
+
+  for (const r of regions) {
+    const box = Array.isArray(r) ? r : r?.box_2d;
+    if (Array.isArray(box) && box.length === 4) {
+      const [ymin, xmin, ymax, xmax] = box;
+      const x1 = (xmin / 1000) * uploadCanvas.width - 12;
+      const y1 = (ymin / 1000) * uploadCanvas.height - 12;
+      const x2 = (xmax / 1000) * uploadCanvas.width + 12;
+      const y2 = (ymax / 1000) * uploadCanvas.height + 12;
+      blurCanvasRect(x1, y1, x2, y2);
+      blurredCount++;
+    }
+  }
+
+  if (blurredCount > 0) {
+    showToast(`🔒 ಮುಖ / ನಂಬರ್ ಪ್ಲೇಟ್ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಬ್ಲರ್ ಮಾಡಲಾಗಿದೆ (${blurredCount} blurred)`);
+  }
+}
+
+// Upload Photo onto 1280px+ Canvas + Auto-Blur Faces/Plates + Auto-Generate Detailed Description
 imageUploadInput.addEventListener("change", (e) => {
   const file = e.target.files?.[0];
   if (!file) return;
   const reader = new FileReader();
   reader.onload = () => {
     const img = new Image();
-    img.onload = () => {
+    img.onload = async () => {
       const targetW = Math.max(1280, img.width);
       const targetH = Math.round((img.height / img.width) * targetW);
       uploadCanvas.width = targetW;
@@ -504,6 +578,12 @@ imageUploadInput.addEventListener("change", (e) => {
       uploadCanvas.style.display = "block";
       uploadPlaceholder.style.display = "none";
       resetBlurBtn.style.display = "inline-flex";
+
+      showToast("🔍 ಚಿತ್ರವನ್ನು ಪರಿಶೀಲಿಸಿ ವಿವರಣೆ ಮತ್ತು ಬ್ಲರ್ ರಚಿಸಲಾಗುತ್ತಿದೆ...");
+      await Promise.all([
+        autoBlurUploadedPhoto(),
+        runAudioAndImageTranscription()
+      ]);
     };
     img.src = reader.result;
   };
@@ -582,7 +662,9 @@ async function runAudioAndImageTranscription() {
       imageBase64,
       imageMime: "image/jpeg",
       audioBase64,
-      hintText: studioVerbatimInput.value
+      hintText: studioVerbatimInput.value,
+      place: studioRegionInput.value,
+      category: studioCategorySelect.value
     });
 
     lastAnnotatedData = annotated;

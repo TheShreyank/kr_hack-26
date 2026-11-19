@@ -24,7 +24,7 @@ export const SEED_DATASET = [
     translation_en: "Local vendors selling fresh flower garlands for temple worship and festivals inside Mysuru's historic Devaraja Market.",
     tags_kn: ["ದೇವರಾಜ_ಮಾರುಕಟ್ಟೆ", "ಪೂಜಾ_ಹೂಮಾಲೆ", "ಮೈಸೂರು_ಪರಂಪರೆ", "ಹಬ್ಬದ_ಖರೀದಿ", "ಸ್ಥಳೀಯ_ವ್ಯಾಪಾರ"],
     tags_en: ["temple", "flower", "stall", "garland", "devaraja market", "mysuru", "vendors"],
-    image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Devaraja_Market_-Mysore_-Karnataka_-20190214_172824.jpg/1280px-Devaraja_Market_-Mysore_-Karnataka_-20190214_172824.jpg",
+    image_url: "/photos/CM-KA-001.jpg",
     audio_url: "/audio/CM-KA-001.mp3",
     fallback_theme: { bg1: "#b45309", bg2: "#f59e0b", icon: "🌼", label: "ದೇವರಾಜ ಮಾರುಕಟ್ಟೆ ಹೂವಿನ ಮಳಿಗೆ" }
   },
@@ -64,7 +64,7 @@ export const SEED_DATASET = [
     translation_en: "Everyday bustle of passengers and auto-rickshaws outside Kalaburagi (Gulbarga) Junction railway station in Kalyana Karnataka.",
     tags_kn: ["ಕಲ್ಯಾಣ_ಕರ್ನಾಟಕ", "ಕಲಬುರಗಿ_ನಗರ", "ರೈಲು_ನಿಲ್ದಾಣ", "ಸಾರ್ವಜನಿಕ_ಸಾರಿಗೆ", "ದಿನನಿತ್ಯದ_ಬದುಕು"],
     tags_en: ["kalaburagi", "gulbarga", "railway station", "north karnataka", "commuters", "street"],
-    image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Kalaburagi_%28Gulbarga%29_Junction_railway_station_under_Solapur_Railway_Division_05.jpg/1280px-Kalaburagi_%28Gulbarga%29_Junction_railway_station_under_Solapur_Railway_Division_05.jpg",
+    image_url: "/photos/CM-KA-018.jpg",
     audio_url: "/audio/CM-KA-018.mp3",
     fallback_theme: { bg1: "#7c2d12", bg2: "#ea580c", icon: "🚉", label: "ಕಲಬುರಗಿ ರೈಲು ನಿಲ್ದಾಣ" }
   },
@@ -84,7 +84,7 @@ export const SEED_DATASET = [
     translation_en: "Citizens, two-wheelers, and a local eatery on a busy street opposite the Municipal Corporation in Hubballi.",
     tags_kn: ["ಹುಬ್ಬಳ್ಳಿ_ಧಾರವಾಡ", "ಉತ್ತರ_ಕರ್ನಾಟಕ", "ವಾಣಿಜ್ಯ_ನಗರಿ", "ಪೇಟೆ_ಬೀದಿ", "ಸ್ಥಳೀಯ_ಹೋಟೆಲ್"],
     tags_en: ["hubli", "hubballi", "dharwad", "street", "north karnataka", "hotel", "road"],
-    image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Hotel_Swathi_opposite_Hubli_Corporation_-_panoramio.jpg/1280px-Hotel_Swathi_opposite_Hubli_Corporation_-_panoramio.jpg",
+    image_url: "/photos/CM-KA-019.jpg",
     audio_url: "/audio/CM-KA-019.mp3",
     fallback_theme: { bg1: "#9a3412", bg2: "#f59e0b", icon: "🏙️", label: "ಹುಬ್ಬಳ್ಳಿ ಪೇಟೆ ರಸ್ತೆ" }
   },
@@ -164,7 +164,7 @@ export const SEED_DATASET = [
     translation_en: "A roadside vendor preparing Pani Puri and evening chaat snacks near a college campus in Bengaluru.",
     tags_kn: ["ಬೀದಿ_ಆಹಾರ", "ಕ್ಯಾಂಪಸ್_ಸಂಜೆ", "ಪಾನಿಪೂರಿ_ಅಂಗಡಿ", "ವಿದ್ಯಾರ್ಥಿ_ಜೀವನ", "ಬೆಂಗಳೂರು_ಚಾಟ್ಸ್"],
     tags_en: ["college", "campus", "panipuri", "chaat", "stall", "street food", "bengaluru"],
-    image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Kach_Dabeli_-_VV_Puram_Food_Street%2C_Bangalore_-_Karnataka_-_PXL5846.jpg/1280px-Kach_Dabeli_-_VV_Puram_Food_Street%2C_Bangalore_-_Karnataka_-_PXL5846.jpg",
+    image_url: "/photos/CM-KA-007.jpg",
     audio_url: "/audio/CM-KA-007.mp3",
     fallback_theme: { bg1: "#b45309", bg2: "#d97706", icon: "🥘", label: "ಕಾಲೇಜಿನ ಹತ್ತಿರದ ಪಾನಿಪೂರಿ ಅಂಗಡಿ" }
   },
@@ -224,7 +224,7 @@ export const SEED_DATASET = [
     translation_en: "Butter-topped Avarebele Masala Dosa roasting on a street vendor's griddle at VV Puram Food Street, Bengaluru.",
     tags_kn: ["ತಿಂಡಿ_ಬೀದಿ", "ಅವರೆಬೇಳೆ_ದೋಸೆ", "ಬೆಂಗಳೂರು_ಆಹಾರ", "ರಾತ್ರಿ_ಉಪಾಹಾರ", "ದರ್ಶಿನಿ_ರುಚಿ"],
     tags_en: ["dosa", "masala dosa", "vv puram", "food street", "bengaluru", "street food"],
-    image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Avarebele_Dose_-_VV_Puram_Food_Street%2C_Bangalore_-_Karnataka_-_PXL5960.jpg/1280px-Avarebele_Dose_-_VV_Puram_Food_Street%2C_Bangalore_-_Karnataka_-_PXL5960.jpg",
+    image_url: "/photos/CM-KA-002.jpg",
     audio_url: "/audio/CM-KA-002.mp3",
     fallback_theme: { bg1: "#78350f", bg2: "#d97706", icon: "🥞", label: "ವಿ.ವಿ. ಪುರಂ ತಿಂಡಿ ಬೀದಿಯ ದೋಸೆ" }
   },
@@ -244,7 +244,7 @@ export const SEED_DATASET = [
     translation_en: "A green-and-yellow auto-rickshaw navigating everyday street traffic beneath shady trees in Bengaluru.",
     tags_kn: ["ಬೆಂಗಳೂರು_ಸಂಚಾರ", "ಆಟೋ_ರಿಕ್ಷಾ", "ನಗರ_ರಸ್ತೆ", "ದಿನನಿತ್ಯದ_ಪ್ರಯಾಣ", "ಸಾರ್ವಜನಿಕ_ಸಾರಿಗೆ"],
     tags_en: ["auto", "rickshaw", "street", "traffic", "bengaluru", "road", "transport"],
-    image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Namma_yatri_Auto-rickshaw_in_Bangalore.jpg/1280px-Namma_yatri_Auto-rickshaw_in_Bangalore.jpg",
+    image_url: "/photos/CM-KA-005.jpg",
     audio_url: "/audio/CM-KA-005.mp3",
     fallback_theme: { bg1: "#065f46", bg2: "#eab308", icon: "🛺", label: "ಬೆಂಗಳೂರಿನ ಆಟೋ ರಿಕ್ಷಾ" }
   },
@@ -264,7 +264,7 @@ export const SEED_DATASET = [
     translation_en: "A BMTC 'Bengaluru Sarige' feeder bus passing pedestrians along a residential street in Bengaluru.",
     tags_kn: ["ಬೆಂಗಳೂರು_ಸಾರಿಗೆ", "ಬಿಎಂಟಿಸಿ_ಬಸ್ಸು", "ಬಡಾವಣೆ_ರಸ್ತೆ", "ನಗರ_ಪ್ರಯಾಣಿಕರು", "ಸಾಮಾನ್ಯ_ಜನಜೀವನ"],
     tags_en: ["bmtc", "bus", "bengaluru", "street", "commuters", "transport"],
-    image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Metro_feeder_Midi_bus%28On_Bengaluru_Sarige_Livery%29_in_Vijaya_Bank_Layout.jpg/1280px-Metro_feeder_Midi_bus%28On_Bengaluru_Sarige_Livery%29_in_Vijaya_Bank_Layout.jpg",
+    image_url: "/photos/CM-KA-006.jpg",
     audio_url: "/audio/CM-KA-006.mp3",
     fallback_theme: { bg1: "#1e40af", bg2: "#3b82f6", icon: "🚌", label: "ಬಿಎಂಟಿಸಿ ಬೆಂಗಳೂರು ಸಾರಿಗೆ ಬಸ್ಸು" }
   },
@@ -304,7 +304,7 @@ export const SEED_DATASET = [
     translation_en: "Skilled craftsmen in Channapatna, Ramanagara shaping lacquered wooden toys on a traditional lathe.",
     tags_kn: ["ಚನ್ನಪಟ್ಟಣ_ಗೊಂಬೆ", "ಗ್ರಾಮೀಣ_ಕರಕುಶಲ", "ರಾಮನಗರ_ಜಿಲ್ಲೆ", "ಸಾಂಪ್ರದಾಯಿಕ_ಕಲೆ", "ಶ್ರಮಜೀವಿ_ಕಲಾವಿದರು"],
     tags_en: ["channapatna", "wooden toys", "artisan", "craft", "ramanagara", "toys"],
-    image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Channapatna_toys_artists.jpg/1280px-Channapatna_toys_artists.jpg",
+    image_url: "/photos/CM-KA-004.jpg",
     audio_url: "/audio/CM-KA-004.mp3",
     fallback_theme: { bg1: "#991b1b", bg2: "#dc2626", icon: "🪆", label: "ಚನ್ನಪಟ್ಟಣದ ಗೊಂಬೆ ಕಲಾವಿದರು" }
   },
@@ -324,7 +324,7 @@ export const SEED_DATASET = [
     translation_en: "Pushcart fruit sellers and pedestrians along the busy street outside Devaraja Market in Mysuru.",
     tags_kn: ["ಮೈಸೂರು_ಬೀದಿ", "ತಳ್ಳುಗಾಡಿ_ವ್ಯಾಪಾರ", "ದೇವರಾಜ_ಮಾರುಕಟ್ಟೆ", "ಪೇಟೆ_ಜನಜೀವನ", "ಪಾರಂಪರಿಕ_ಕಟ್ಟಡ"],
     tags_en: ["mysuru", "devaraja market", "street", "vendors", "pushcart", "market"],
-    image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Mysuru_-_Devaraja_Market_Entrance.jpg/1280px-Mysuru_-_Devaraja_Market_Entrance.jpg",
+    image_url: "/photos/CM-KA-008.jpg",
     audio_url: "/audio/CM-KA-008.mp3",
     fallback_theme: { bg1: "#92400e", bg2: "#f59e0b", icon: "🛒", label: "ಮೈಸೂರು ಮಾರುಕಟ್ಟೆ ರಸ್ತೆ" }
   },
@@ -344,7 +344,7 @@ export const SEED_DATASET = [
     translation_en: "Bustling crowd of shoppers walking along the narrow retail lane of Commercial Street, Bengaluru.",
     tags_kn: ["ಕಮರ್ಷಿಯಲ್_ಸ್ಟ್ರೀಟ್", "ಬೆಂಗಳೂರು_ಮಾರುಕಟ್ಟೆ", "ಬೀದಿ_ಖರೀದಿ", "ನಗರ_ಜನಸಂದಣಿ", "ವ್ಯಾಪಾರ_ಬೀದಿ"],
     tags_en: ["commercial street", "bengaluru", "shopping", "street", "crowd", "market"],
-    image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Commercial_Street_-_Bangalore_%2824047126747%29.jpg/1280px-Commercial_Street_-_Bangalore_%2824047126747%29.jpg",
+    image_url: "/photos/CM-KA-011.jpg",
     audio_url: "/audio/CM-KA-011.mp3",
     fallback_theme: { bg1: "#7c2d12", bg2: "#ea580c", icon: "🛍️", label: "ಕಮರ್ಷಿಯಲ್ ಸ್ಟ್ರೀಟ್ ಬೆಂಗಳೂರು" }
   },
@@ -364,7 +364,7 @@ export const SEED_DATASET = [
     translation_en: "Customers gathered at night around a simmering cauldron of Badam Milk and stack of Pheni at VV Puram Food Street.",
     tags_kn: ["ಬಾದಾಮಿ_ಹಾಲು", "ಸಾಂಪ್ರದಾಯಿಕ_ಸಿಹಿ", "ವಿ_ವಿ_ಪುರಂ", "ರಾತ್ರಿ_ತಿಂಡಿಬೀದಿ", "ಬೆಂಗಳೂರು_ರುಚಿ"],
     tags_en: ["badam milk", "pheni", "sweets", "vv puram", "food street", "bengaluru"],
-    image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Pheni_with_Badam_Milk_-_VV_Puram_Food_Street%2C_Bangalore_-_Karnataka_-_PXL4222.jpg/1280px-Pheni_with_Badam_Milk_-_VV_Puram_Food_Street%2C_Bangalore_-_Karnataka_-_PXL4222.jpg",
+    image_url: "/photos/CM-KA-012.jpg",
     audio_url: "/audio/CM-KA-012.mp3",
     fallback_theme: { bg1: "#78350f", bg2: "#f59e0b", icon: "🥛", label: "ಬಿಸಿ ಬಾದಾಮಿ ಹಾಲು ಅಂಗಡಿ" }
   },
@@ -404,7 +404,7 @@ export const SEED_DATASET = [
     translation_en: "An unposed street portrait of a Bengaluru auto-rickshaw driver sitting in his vehicle waiting for a fare.",
     tags_kn: ["ಆಟೋ_ಚಾಲಕ", "ಶ್ರಮಜೀವಿ_ಬದುಕು", "ಬೆಂಗಳೂರು_ರಸ್ತೆ", "ನೈಜ_ಜನಜೀವನ", "ನಗರ_ಸಾರಿಗೆ"],
     tags_en: ["auto driver", "rickshaw", "bengaluru", "street", "candid", "driver"],
-    image_url: "https://upload.wikimedia.org/wikipedia/commons/a/a5/Nice_Auto%2C_Bangalore%2C_India_%281628818522%29.jpg",
+    image_url: "/photos/CM-KA-014.jpg",
     audio_url: "/audio/CM-KA-014.mp3",
     fallback_theme: { bg1: "#78350f", bg2: "#eab308", icon: "🚕", label: "ಬೆಂಗಳೂರಿನ ಆಟೋ ಚಾಲಕ" }
   },
