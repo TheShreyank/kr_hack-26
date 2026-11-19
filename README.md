@@ -1,116 +1,145 @@
-# ಚಿತ್ರ-ಮಾತು (Chitra-Maathu) · Picture, Voice & Caption
+# ಚಿತ್ರ-ಮಾತು (Chitra-Maathu) — Picture, Voice & Caption
 
-> **Modalapada 2.0 (ಮೊದಲಪದ - II) · Kannada Multimodal AI Hackathon**  
-> **Dept. of Computer Science & Engineering, Ramaiah Institute of Technology (MSRIT), Bengaluru**  
-> **Track:** Problem 3 · Chitra-Maathu (`ಚಿತ್ರ-ಮಾತು`)
+**Modalapada 2.0 (ಮೊದಲಪದ - II) · Kannada Multimodal AI Hackathon**  
+**Department of Computer Science & Engineering, Ramaiah Institute of Technology (MSRIT), Bengaluru**  
+**Problem Statement 3:** Chitra-Maathu (`ಚಿತ್ರ-ಮಾತು`)
 
 ---
 
-## 📌 Problem Overview & Challenge
+## Abstract
 
-Photograph everyday Karnataka life and describe each photo aloud in Kannada. Build an end-to-end multimodal AI system that:
-1. Ingests high-resolution scene photos (`JPEG, 1280px+`) with privacy blurring (faces & license plates).
-2. Records a 15–30 second spoken Kannada description (`16 kHz mono WAV` / audio).
-3. Transcribes and refines colloquial spoken descriptions into clean, standard literary Kannada captions (`ಪ್ರಮಾಣ ಕನ್ನಡ ವಿವರಣೆ`).
-4. Provides a voice-to-photo search retrieval demo (`ಕನ್ನಡ ಧ್ವನಿ ಹುಡುಕಾಟ`).
+**Chitra-Maathu** is a Kannada multimodal data collection studio and voice-to-image retrieval system built for documenting everyday life across Karnataka. The platform pairs high-resolution photographs (`JPEG, 1280px+`) with 15–30 second spoken Kannada descriptions (`16 kHz mono WAV` / audio) and normalized literary standard Kannada captions (`ಪ್ರಮಾಣ ಕನ್ನಡ ವಿವರಣೆ`), enabling users to retrieve relevant photographs through natural spoken Kannada queries.
 
-### 🔄 The End-to-End Pipeline (Slide 1)
+### System Pipeline
 
 ```text
-┌──────────────┐     ┌──────────────────────┐     ┌─────────────────┐     ┌───────────────────┐     ┌──────────────────────┐
-│  1. Photo    │ ──> │ 2. Speak in Kannada  │ ──> │ 3. Kannada ASR  │ ──> │    4. Caption     │ ──> │   5. Voice Search    │
-│ (1280px+ JPG)│     │  (15–30s Voice WAV)  │     │ (kn-IN Speech)  │     │ (ಪ್ರಮಾಣ ಕನ್ನಡ)    │     │  (ಧ್ವನಿ ಹುಡುಕಾಟ)      │
-└──────────────┘     └──────────────────────┘     └─────────────────┘     └───────────────────┘     └──────────────────────┘
++---------------+     +----------------------+     +-----------------+     +-------------------+     +--------------------+
+|   1. Photo    | --> | 2. Speak in Kannada  | --> | 3. Kannada ASR  | --> |    4. Caption     | --> |  5. Voice Search   |
+| (1280px+ JPG) |     |  (15-30s Audio WAV)  |     | (kn-IN Speech)  |     |  (ಪ್ರಮಾಣ ಕನ್ನಡ)   |     |  (ಧ್ವನಿ ಹುಡುಕಾಟ)   |
++---------------+     +----------------------+     +-----------------+     +-------------------+     +--------------------+
 ```
 
 ---
 
-## 🎯 Starter Examples (Slide 1 Verified)
+## Core Capabilities
 
-| Scenario | Spoken Input (Kannada) | System Output / Matched Scene | Triplet ID |
+1. **Kannada Voice-to-Photo Retrieval (`ಕನ್ನಡ ಧ್ವನಿ ಹುಡುಕಾಟ`)**
+   - Supports continuous spoken Kannada queries (`kn-IN` Web Speech API + 16 kHz PCM WAV multimodal audio analysis).
+   - Combines multimodal LLM ranking with an offline Kannada morphological stemmer and domain synonym graph so queries work reliably both online and offline.
+2. **Multimodal Triplet Ingestion & Editing Studio**
+   - Normalizes uploaded images to `1280px+` JPEG resolution.
+   - Records 15–30 second spoken descriptions directly in browser memory and encodes them into `16,000 Hz Mono 16-bit PCM WAV`.
+   - Transforms colloquial regional speech (containing hesitations, fillers, and dialect variations) into multi-sentence literary Kannada captions.
+   - Allows full editing and deletion of existing triplets.
+3. **Automated & Manual Privacy Protection**
+   - Uses vision bounding-box detection with high-confidence filtering to locate and apply Gaussian blur strictly to identifiable human faces and readable vehicle registration plates while leaving architecture, food, and landscapes untouched.
+   - Includes an interactive canvas brush and one-click undo for manual privacy refinement.
+
+---
+
+## Reference Test Cases
+
+| Case | Spoken Input (Kannada) | Normalized Output / Retrieved Scene | Triplet ID |
 | :--- | :--- | :--- | :--- |
 | **Photo 1** | *"ಇದು... ಹ್ಞಾ... ನಮ್ಮ ಕಾಲೇಜ್ ಹತ್ರ ಇರೋ ಪಾನಿಪೂರಿ ಅಂಗಡಿ"* | **ನಮ್ಮ ಕಾಲೇಜಿನ ಹತ್ತಿರದ ಪಾನಿಪುರಿ ಅಂಗಡಿ** | `CM-KA-007` |
 | **Photo 2** | *"ಇದು ಮೈಸೂರು ಅರಮನೆಯ ದೀಪಾಲಂಕಾರ"* | **ದೀಪಗಳಿಂದ ಬೆಳಗಿದ ಮೈಸೂರು ಅರಮನೆ** | `CM-KA-015` |
-| **Voice Search** | *"ದೇವಸ್ಥಾನದ ಹೂವಿನ ಅಂಗಡಿ ತೋರಿಸು"* | **Top Result:** Devaraja Market Flower Stalls, Mysuru | `CM-KA-001` |
+| **Search** | *"ದೇವಸ್ಥಾನದ ಹೂವಿನ ಅಂಗಡಿ ತೋರಿಸು"* | **Top Result:** Devaraja Market Flower Stalls, Mysuru | `CM-KA-001` |
 
 ---
 
-## 📦 Submission Deliverables (Slide 2 Compliance)
+## Repository & Dataset Deliverables
 
-| Deliverable | Location | Description / Status |
-| :--- | :--- | :--- |
-| **Photos Folder** | `dataset/photos/` | High-resolution JPEGs (≥ 1280px) with faces & vehicle number plates blurred. |
-| **Audio Folder** | `dataset/audio/` | 15–30s spoken Kannada audio descriptions across native dialects (`SPK-01` to `SPK-04`). |
-| **Captions Folder** | `dataset/captions/` | Clean literary standard Kannada `.txt` caption files (1 per photo). |
-| **Metadata CSV** | `dataset/metadata.csv` | Full manifest matching format: `triplet_id, photo_file, audio_file, caption_file, place, category, speaker_id, duration_sec, spoken_transcript_kn, clean_caption_kn`. |
-| **Voice-to-Photo Demo** | Local Single-Page Web App | Responsive UI with real-time Kannada voice search, audio playback, and photo management. |
-| **Consent Forms** | `dataset/consent_forms/` | Bilateral Kannada & English speaker consent declaration and Speaker ID registry. |
-| **Submission Package** | `Chitra_Maathu_Modalapada2_Submission.zip` | One-click bundle generated via `python scripts/package_submission.py`. |
+```text
+├── index.html                                  # Application entry point
+├── package.json                                # Build configuration and dependencies
+├── dataset/
+│   ├── metadata.csv                            # Master manifest (one row per triplet)
+│   ├── photos/                                 # 1280px+ JPEG images (faces & number plates blurred)
+│   ├── audio/                                  # 15-30s spoken Kannada descriptions
+│   ├── captions/                               # UTF-8 literary Kannada .txt captions (1 per photo)
+│   └── consent_forms/
+│       └── speaker_consent_form.md             # Bilateral Kannada & English consent declarations
+├── src/
+│   ├── main.js                                 # UI controller, 16kHz recorder, privacy canvas
+│   ├── styles.css                              # Application styling
+│   ├── data/
+│   │   └── seedDataset.js                      # Curated Karnataka scene triplets across 9 districts
+│   └── utils/
+│       ├── geminiService.js                    # Multimodal ASR, caption normalization, face/plate detector
+│       └── wavEncoder.js                       # 16,000 Hz Mono 16-bit PCM WAV resampler & encoder
+└── scripts/
+    ├── build_300_dataset.py                    # Syncs captions, audio, and metadata.csv
+    ├── blur_dataset_photos.py                  # Applies surgical Gaussian blur to faces & license plates
+    ├── evaluate_accuracy.py                    # Computes WER / CER and retrieval accuracy
+    └── package_submission.py                   # Packages official deliverables into a submission ZIP
+```
+
+### Metadata Schema (`dataset/metadata.csv`)
+
+Each row represents a complete triplet with the following columns:
+`triplet_id, photo_file, audio_file, caption_file, place, category, speaker_id, duration_sec, spoken_transcript_kn, clean_caption_kn`
 
 ---
 
-## 📊 Judging Criteria & Benchmark Results
+## Dataset Coverage & Evaluation
 
-### 1. Triplet Quality & Variety
-- **5 Scene Categories:** Streets (`ರಸ್ತೆಗಳು`), Food (`ಆಹಾರ`), Festivals (`ಹಬ್ಬ-ಜಾತ್ರೆ`), Nature (`ಪ್ರಕೃತಿ`), Building (`ಕಟ್ಟಡಗಳು`).
-- **Geographic Representation (8+ Districts):**
-  - Bengaluru Urban (Commercial St, VV Puram, BMTC, MSRIT Campus)
-  - Mysuru (Devaraja Market, Mysore Palace Dasara)
-  - Ramanagara (Channapatna Wooden Toy Craftsmen)
-  - Udupi & Manipal (Krishna Matha Ratha Beedi, Malpe Beach, Hasta Shilpa)
-  - Vijayapura / Bijapur (Gol Gumbaz Lawns)
-  - Kalaburagi / Gulbarga (Railway Station Junction)
-  - Dharwad / Hubballi (Corporation Street & Hotel Swathi)
-  - Kodagu / Coorg (Madikeri Coffee Plantation)
+### 1. Geographic & Category Distribution
+- **Categories (5):** `Streets` (`ರಸ್ತೆಗಳು`), `Food` (`ಆಹಾರ`), `Festivals` (`ಹಬ್ಬ-ಜಾತ್ರೆ`), `Nature` (`ಪ್ರಕೃತಿ`), `Building` (`ಕಟ್ಟಡಗಳು`).
+- **Districts Covered (9):**
+  - Bengaluru Urban (MSRIT Campus, VV Puram Food Street, Commercial Street, BMTC Transport)
+  - Mysuru (Devaraja Market, Mysuru Palace Dasara Illumination)
+  - Shivamogga (Jog Falls in Sagara, Sharavathi River Backwaters)
+  - Udupi & Manipal (Sri Krishna Matha Ratha Beedi, Malpe Beach, Hasta Shilpa Heritage Village)
+  - Ramanagara (Channapatna Wooden Toy Artisans)
+  - Vijayapura (Gol Gumbaz Courtyard)
+  - Kalaburagi (Kalaburagi Railway Station Junction)
+  - Dharwad / Hubballi (Municipal Corporation Street)
+  - Kodagu (Madikeri Coffee & Pepper Estate)
 
-### 2. Caption Accuracy (WER / CER)
-Evaluated using the built-in Levenshtein evaluation runner:
+### 2. Caption Accuracy (WER / CER) & Voice-Search Relevance
+Run the evaluation benchmark to verify dataset integrity, Levenshtein Word Error Rate (WER), Character Error Rate (CER), and Top-1 retrieval accuracy:
+
 ```bash
 python scripts/evaluate_accuracy.py
 ```
-- **Grammar & Syntactic Validity:** 100% (Standard Literary Kannada - ಪ್ರಮಾಣ ಕನ್ನಡ).
-- **Disfluency Removal:** Removes hesitation pauses (*"ಇದು... ಹ್ಞಾ..."*), colloquialisms, and conversational clutter.
-
-### 3. Voice-Search Relevance
-- Semantic retrieval combines Kannada morphological inflection matching (e.g., `ಅಂಗಡಿ` ↔ `ಅಂಗಡಿಯ`, `ಮಾರುಕಟ್ಟೆ` ↔ `ಮಾರುಕಟ್ಟೆಯಲ್ಲಿ`) with live multimodal embeddings.
-- **Top-1 Match on Starter Test Queries:** 100% Pass rate.
 
 ---
 
-## 🚀 How to Run the Prototype
+## Local Setup & Execution
 
 ### Prerequisites
-- Node.js (v18+) & Python (v3.9+)
+- Node.js (v18+)
+- Python (v3.9+)
 
-### 1. Launch the Voice Search & Collection Studio
+### 1. Run the Web Application
 ```bash
-# Install dependencies
 npm install
-
-# Start local server
 npm run dev
 ```
-Open [http://localhost:5173](http://localhost:5173) in your browser.
+Open `http://localhost:5173` in your browser.
 
-### 2. Run Accuracy Benchmark
-```bash
-python scripts/evaluate_accuracy.py
+*(Optional)* To enable live Gemini multimodal vision and audio auto-captioning for newly uploaded photos, create a `.env.local` file in the root directory:
+```env
+VITE_GEMINI_API_KEY=your_api_key_here
 ```
 
-### 3. Generate Official Submission ZIP
+### 2. Build for Production
+```bash
+npm run build
+npm run preview
+```
+
+### 3. Package Submission Archive
 ```bash
 python scripts/package_submission.py
 ```
-Outputs `Chitra_Maathu_Modalapada2_Submission.zip` ready to hand to judges.
+Generates `Chitra_Maathu_Modalapada2_Submission.zip` containing `dataset/photos/`, `dataset/audio/`, `dataset/captions/`, `dataset/metadata.csv`, `dataset/consent_forms/`, and `README.md`.
 
 ---
 
-## 👥 Speaker ID Registry & Ethical Compliance
+## Speaker Registry & Ethical Compliance
 
-All speech and photographic contributions comply with the research ethics charter of Modalapada 2.0:
-- `SPK-01`: Old Mysuru / Southern Karnataka Dialect
-- `SPK-02`: Bengaluru Urban Colloquial Dialect
-- `SPK-03`: North Karnataka / Hubballi-Gulbarga Dialect
-- `SPK-04`: Coastal / Karavali Karnataka Dialect
-
-Full signed consent forms: [`dataset/consent_forms/speaker_consent_form.md`](./dataset/consent_forms/speaker_consent_form.md).
+All recordings and photographs adhere to the privacy and ethics guidelines of Modalapada 2.0:
+- Identifiable faces and vehicle registration plates are blurred prior to publication.
+- Audio descriptions contain zero personally identifiable information (PII).
+- Speaker dialect registry (`SPK-01` Old Mysuru, `SPK-02` Bengaluru Urban, `SPK-03` North Karnataka, `SPK-04` Coastal Karnataka) and signed consent forms are archived in [`dataset/consent_forms/speaker_consent_form.md`](./dataset/consent_forms/speaker_consent_form.md).

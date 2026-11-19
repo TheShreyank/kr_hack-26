@@ -70,11 +70,6 @@ async function callModelEndpoint(apiKey, payload) {
   throw lastError || new Error("Request failed");
 }
 
-/**
- * Smartly detects ONLY clearly identifiable human faces and readable vehicle license plates
- * in an uploaded photo. Returns an empty array [] if there are no faces or number plates
- * (e.g., forts, buildings, food close-ups, landscapes).
- */
 export async function detectFacesAndPlates({ imageBase64, imageMime = "image/jpeg" }) {
   const apiKey = getEnvApiKey();
   if (!apiKey || !imageBase64) return [];
@@ -127,7 +122,6 @@ Return ONLY valid JSON:
       ? parsed.regions
       : [];
 
-    // Filter out low-confidence or oversized false-positive boxes
     return rawList.filter((r) => {
       const box = r?.box_2d;
       if (!Array.isArray(box) || box.length !== 4) return false;
@@ -137,7 +131,6 @@ Return ONLY valid JSON:
       const areaFraction = (wNorm * hNorm) / (1000 * 1000);
       const conf = typeof r.confidence === "number" ? r.confidence : 0.9;
       const validType = r.type === "face" || r.type === "plate";
-      // A face or number plate should have positive size, < 10% of total image area, and confidence >= 0.88
       return validType && conf >= 0.88 && wNorm > 10 && hNorm > 10 && areaFraction < 0.10;
     });
   } catch (err) {

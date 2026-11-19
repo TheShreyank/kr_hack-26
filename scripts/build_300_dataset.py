@@ -1,24 +1,11 @@
 #!/usr/bin/env python3
-"""
-Chitra-Maathu (ಚಿತ್ರ-ಮಾತು) Batch Dataset Builder & WER/CER Evaluator
-Modalapada 2.0 · Problem 3 (Dept. of CS&E, Ramaiah Institute of Technology)
-
-Features:
-1. Generates/updates the official submission folders:
-   - dataset/photos/      (JPEG, 1280px or larger)
-   - dataset/audio/       (Spoken Kannada descriptions, 15-30s)
-   - dataset/captions/    (UTF-8 Kannada .txt captions, 1 per photo)
-   - dataset/metadata.csv (One row per triplet: place, category, speaker_id, etc.)
-2. Computes Word Error Rate (WER) and Character Error Rate (CER) for caption accuracy evaluation.
-"""
-
 import csv
 import os
 import re
 import shutil
 
+
 def extract_triplets_from_seed_js():
-    """Parses src/data/seedDataset.js so dataset/metadata.csv and dataset/captions/ stay 100% synced."""
     seed_path = os.path.join("src", "data", "seedDataset.js")
     with open(seed_path, "r", encoding="utf-8") as f:
         text = f.read()
@@ -48,7 +35,6 @@ def extract_triplets_from_seed_js():
 
 
 def levenshtein_distance(seq1, seq2):
-    """Calculates Levenshtein edit distance for WER / CER scoring."""
     m, n = len(seq1), len(seq2)
     dp = [[0] * (n + 1) for _ in range(m + 1)]
     for i in range(m + 1):
@@ -67,7 +53,6 @@ def levenshtein_distance(seq1, seq2):
 
 
 def compute_wer_cer(reference_kn: str, hypothesis_kn: str):
-    """Computes Word Error Rate (WER) and Character Error Rate (CER) for Kannada text."""
     ref_words = reference_kn.strip().split()
     hyp_words = hypothesis_kn.strip().split()
     wer = levenshtein_distance(ref_words, hyp_words) / max(1, len(ref_words))

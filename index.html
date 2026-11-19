@@ -10,7 +10,6 @@
   <link rel="stylesheet" href="/src/styles.css" />
 </head>
 <body>
-  <!-- Clean Header -->
   <header class="app-header">
     <div class="brand-group">
       <svg class="brand-flag" viewBox="0 0 100 100" role="img" aria-label="Karnataka flag"><rect width="100" height="50" fill="#FFCC00"/><rect y="50" width="100" height="50" fill="#D7261E"/></svg>
@@ -32,9 +31,7 @@
     </div>
   </header>
 
-  <!-- Main Single-Page Experience -->
   <main class="main-content">
-    <!-- Voice & Text Search Hero -->
     <section class="search-hero">
       <h2 class="kn-text">ಕನ್ನಡದಲ್ಲಿ ಮಾತನಾಡಿ, ಚಿತ್ರವನ್ನು ಹುಡುಕಿ</h2>
       <p>Speak or type in Kannada to find matching photos of Karnataka life.</p>
@@ -122,7 +119,6 @@
     </section>
   </main>
 
-  <!-- Modal to Add New Photo + 15-30s Voice + Caption Triplet -->
   <div id="addSceneModal" class="modal-backdrop" aria-hidden="true">
     <div class="modal-card" role="dialog" aria-labelledby="modalTitle">
       <div class="modal-header">
@@ -131,7 +127,6 @@
       </div>
 
       <div class="modal-body">
-        <!-- 1. Photo Upload + Optional Face/Plate Blur -->
         <div class="form-group">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
             <label class="kn-text" style="margin: 0;">1. ಚಿತ್ರ ಆಯ್ಕೆಮಾಡಿ (Upload Photo · Drag on photo to blur faces/plates)</label>
@@ -150,7 +145,6 @@
           </label>
         </div>
 
-        <!-- 2. Voice Recording (15-30s) -->
         <div class="form-group">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
             <label class="kn-text" style="margin: 0;">2. ಕನ್ನಡದಲ್ಲಿ ಧ್ವನಿ ವಿವರಣೆ (Record 15–30 s Voice Description)</label>
@@ -165,7 +159,6 @@
           <audio id="studioAudioPreview" controls style="width: 100%; height: 36px; margin-top: 0.5rem; display: none;"></audio>
         </div>
 
-        <!-- 3. Metadata CSV Fields: Place, Category, Speaker ID -->
         <div class="form-row-3">
           <div class="form-group">
             <label for="studioRegionInput" class="kn-text">ಸ್ಥಳ / ಜಿಲ್ಲೆ (Place)</label>

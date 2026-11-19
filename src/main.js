@@ -18,17 +18,14 @@ let currentResults = dataset.map((item) => ({
   matchedTokens: []
 }));
 
-// Active audio player tracker
 let activeAudio = null;
 let activePlayButton = null;
 
-// Voice Search State
 let isVoiceSearching = false;
 let searchWavRecorder = null;
 let searchSpeechRecognition = null;
 let searchFinalTranscript = "";
 
-// Modal State
 let isStudioRecording = false;
 let studioWavRecorder = null;
 let studioSpeechRecognition = null;
@@ -38,12 +35,10 @@ let recordedDurationSec = 0;
 let recordingTimerInterval = null;
 let recordingSecondsElapsed = 0;
 
-// Canvas & Blur State
 let uploadedOriginalImage = null;
 let hasUploadedPhoto = false;
 let isBlurring = false;
 
-// DOM Elements
 const searchQueryInput = document.getElementById("searchQueryInput");
 const clearSearchBtn = document.getElementById("clearSearchBtn");
 const voiceSearchBtn = document.getElementById("voiceSearchBtn");
@@ -54,7 +49,6 @@ const searchStatusText = document.getElementById("searchStatusText");
 const scenesGrid = document.getElementById("scenesGrid");
 const exportCsvBtn = document.getElementById("exportCsvBtn");
 
-// Modal Elements
 const addSceneModal = document.getElementById("addSceneModal");
 const openAddModalBtn = document.getElementById("openAddModalBtn");
 const closeAddModalBtn = document.getElementById("closeAddModalBtn");
@@ -79,7 +73,6 @@ const addSceneToDatasetBtn = document.getElementById("addSceneToDatasetBtn");
 
 const toastBanner = document.getElementById("toastBanner");
 
-// Restore last speaker ID if saved
 const savedSpeaker = localStorage.getItem("chitra_maathu_speaker_id");
 if (savedSpeaker) {
   studioSpeakerInput.value = savedSpeaker;
@@ -93,10 +86,6 @@ function showToast(message) {
   }, 3200);
 }
 
-/**
- * Helper to create a continuous Kannada SpeechRecognition session that does NOT
- * cut off after a short pause or drop words across breaths.
- */
 function createContinuousKannadaRecognition({ isActiveFn, onTranscriptUpdate }) {
   const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRec) return null;
@@ -136,7 +125,6 @@ function createContinuousKannadaRecognition({ isActiveFn, onTranscriptUpdate }) 
   return recognition;
 }
 
-// Reliable Audio Playback
 function stopActiveAudio() {
   if (activeAudio) {
     activeAudio.pause();
@@ -218,7 +206,6 @@ function getFilteredResultsByCategory(resultsList) {
   return resultsList.filter((entry) => entry.item.category === activeCategory);
 }
 
-// Render Photo Gallery Grid
 function renderScenesGrid(results, isFiltered = false) {
   stopActiveAudio();
   scenesGrid.innerHTML = "";
@@ -341,7 +328,6 @@ function updateStatusText(isFiltered) {
   }
 }
 
-// Search Execution
 async function executeSearch({ queryText = "", audioBase64 = null } = {}) {
   searchStatusText.textContent = "⏳ ಹುಡುಕಲಾಗುತ್ತಿದೆ...";
 
@@ -404,7 +390,6 @@ document.querySelectorAll(".query-chip").forEach((chip) => {
   });
 });
 
-// Category Filter Chips
 document.querySelectorAll(".cat-chip").forEach((chip) => {
   chip.addEventListener("click", () => {
     document.querySelectorAll(".cat-chip").forEach((c) => c.classList.remove("active"));
@@ -417,7 +402,6 @@ document.querySelectorAll(".cat-chip").forEach((chip) => {
   });
 });
 
-// Voice Search Button
 voiceSearchBtn.addEventListener("click", async () => {
   if (!isVoiceSearching) {
     try {
@@ -472,10 +456,6 @@ voiceSearchBtn.addEventListener("click", async () => {
     }
   }
 });
-
-// ======================================================
-// ADD / EDIT PHOTO & VOICE TRIPLET MODAL
-// ======================================================
 
 let editingSceneId = null;
 const modalTitleEl = document.getElementById("modalTitle");
@@ -535,7 +515,6 @@ function openEditModal(item) {
     studioAudioInfo.textContent = `✓ ಪ್ರಸ್ತುತ ಧ್ವನಿ (${recordedDurationSec}s) — ಬೇಕಿದ್ದರೆ ಹೊಸದಾಗಿ ರೆಕಾರ್ಡ್ ಮಾಡಿ`;
   }
 
-  // Load current card image onto the canvas so user can edit/blur or upload a new photo
   if (item.image_url) {
     const img = new Image();
     img.crossOrigin = "anonymous";
@@ -567,7 +546,6 @@ openAddModalBtn.addEventListener("click", openModal);
 closeAddModalBtn.addEventListener("click", closeModal);
 cancelModalBtn.addEventListener("click", closeModal);
 
-// Helper to smoothly Gaussian-blur a face (ellipse) or number plate (rounded box) on uploadCanvas
 function blurCanvasRect(x1, y1, x2, y2, regionType = "face") {
   const startX = Math.max(0, Math.floor(x1));
   const startY = Math.max(0, Math.floor(y1));
@@ -577,7 +555,6 @@ function blurCanvasRect(x1, y1, x2, y2, regionType = "face") {
   const h = endY - startY;
   if (w <= 4 || h <= 4) return;
 
-  // Snapshot current canvas into an offscreen canvas to apply true Gaussian blur
   const offCanvas = document.createElement("canvas");
   offCanvas.width = uploadCanvas.width;
   offCanvas.height = uploadCanvas.height;
@@ -596,11 +573,9 @@ function blurCanvasRect(x1, y1, x2, y2, regionType = "face") {
   uploadCtx.restore();
 }
 
-// Automatically detect and blur any faces or vehicle number plates in the uploaded photo
 async function autoBlurUploadedPhoto() {
   if (!hasUploadedPhoto) return;
 
-  // Create a lightweight 800px thumbnail for fast vision detection (<1.5s)
   const tempCanvas = document.createElement("canvas");
   const maxDim = 800;
   const scale = Math.min(1, maxDim / Math.max(uploadCanvas.width, uploadCanvas.height));
@@ -611,7 +586,6 @@ async function autoBlurUploadedPhoto() {
 
   let blurredCount = 0;
 
-  // 1. Try browser FaceDetector API if supported
   if ("FaceDetector" in window) {
     try {
       const detector = new window.FaceDetector();
@@ -624,7 +598,6 @@ async function autoBlurUploadedPhoto() {
     } catch (_) {}
   }
 
-  // 2. Use Vision bounding-box detection for all faces (front/profile) and vehicle number plates
   const regions = await detectFacesAndPlates({
     imageBase64: rawBase64,
     imageMime: "image/jpeg"
@@ -649,7 +622,6 @@ async function autoBlurUploadedPhoto() {
   }
 }
 
-// Upload Photo onto 1280px+ Canvas + Auto-Blur Faces/Plates + Auto-Generate Detailed Description
 imageUploadInput.addEventListener("change", (e) => {
   const file = e.target.files?.[0];
   if (!file) return;
@@ -865,7 +837,7 @@ addSceneToDatasetBtn.addEventListener("click", () => {
   const speakerId = studioSpeakerInput.value.trim() || "SPK-01";
   localStorage.setItem("chitra_maathu_speaker_id", speakerId);
 
-  let imageDataUrl = "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=1400&q=85";
+  let imageDataUrl = "/photos/CM-KA-001.jpg";
   if (hasUploadedPhoto) {
     try {
       imageDataUrl = uploadCanvas.toDataURL("image/jpeg", 0.92);
@@ -950,7 +922,6 @@ addSceneToDatasetBtn.addEventListener("click", () => {
   showToast(`✅ ಟ್ರಿಪ್ಲೆಟ್ ${newId} ಸೇರಿಸಲಾಗಿದೆ!`);
 });
 
-// Export Official Metadata CSV (Slide 2: place, category, speaker ID, one row per triplet)
 function escapeCsvField(val) {
   const str = String(val ?? "").replace(/"/g, '""');
   return `"${str}"`;
@@ -995,6 +966,5 @@ exportCsvBtn.addEventListener("click", () => {
   showToast("⬇️ ಡೇಟಾಸೆಟ್ CSV ಡೌನ್‌ಲೋಡ್ ಆಗಿದೆ (metadata.csv)");
 });
 
-// Boot App
 updateStatusText(false);
 renderScenesGrid(currentResults, false);

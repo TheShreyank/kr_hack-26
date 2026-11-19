@@ -1,14 +1,5 @@
-/**
- * 16 kHz Mono PCM WAV Encoder & Recorder
- * Strictly complies with Modalapada 2.0 Hackathon specification:
- * Audio: 16 kHz mono WAV (16-bit PCM, 16000 Hz, 1 channel)
- */
-
 const TARGET_SAMPLE_RATE = 16000;
 
-/**
- * Downsamples or resamples a Float32Array audio buffer to 16,000 Hz Mono
- */
 export function resampleTo16kHzMono(float32Samples, sourceSampleRate) {
   if (sourceSampleRate === TARGET_SAMPLE_RATE) {
     return float32Samples;
@@ -27,9 +18,6 @@ export function resampleTo16kHzMono(float32Samples, sourceSampleRate) {
   return result;
 }
 
-/**
- * Encodes Float32Array [-1, 1] mono samples into a 16-bit PCM WAV Blob at 16 kHz
- */
 export function encode16kHzMonoWAV(samples) {
   const numChannels = 1;
   const bitsPerSample = 16;
@@ -44,10 +32,10 @@ export function encode16kHzMonoWAV(samples) {
   view.setUint32(4, 36 + dataSize, true);
   writeString(view, 8, "WAVE");
   writeString(view, 12, "fmt ");
-  view.setUint32(16, 16, true); // Subchunk1Size (16 for PCM)
-  view.setUint16(20, 1, true);  // AudioFormat (1 = PCM)
-  view.setUint16(22, numChannels, true); // NumChannels = 1 (Mono)
-  view.setUint32(24, TARGET_SAMPLE_RATE, true); // SampleRate = 16000 Hz
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true);
+  view.setUint16(22, numChannels, true);
+  view.setUint32(24, TARGET_SAMPLE_RATE, true);
   view.setUint32(28, byteRate, true);
   view.setUint16(32, blockAlign, true);
   view.setUint16(34, bitsPerSample, true);
@@ -69,9 +57,6 @@ function writeString(view, offset, str) {
   }
 }
 
-/**
- * Converts a Blob into a Base64 string (without data URI prefix) for Gemini API inlineData
- */
 export function blobToBase64(blob) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -85,23 +70,6 @@ export function blobToBase64(blob) {
   });
 }
 
-/**
- * Generates a valid 16 kHz Mono WAV sample tone envelope for seed items when exporting
- */
-export function createSeedReferenceWavBlob(durationSec = 1.8) {
-  const numSamples = Math.floor(TARGET_SAMPLE_RATE * durationSec);
-  const samples = new Float32Array(numSamples);
-  for (let i = 0; i < numSamples; i++) {
-    const t = i / TARGET_SAMPLE_RATE;
-    const envelope = Math.sin((Math.PI * i) / numSamples);
-    samples[i] = 0.2 * envelope * (Math.sin(2 * Math.PI * 220 * t) + 0.5 * Math.sin(2 * Math.PI * 330 * t));
-  }
-  return encode16kHzMonoWAV(samples);
-}
-
-/**
- * Live Microphone Recorder that outputs 16 kHz Mono WAV
- */
 export class Wav16kRecorder {
   constructor(onLevelChange) {
     this.audioContext = null;
