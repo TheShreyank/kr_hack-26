@@ -61,9 +61,9 @@
 │       └── speaker_consent_form.md             # Bilateral Kannada & English consent declarations
 ├── src/
 │   ├── main.js                                 # UI controller, 16kHz recorder, privacy canvas
-│   ├── styles.css                              # Application styling
+│   ├── styles.css                              # Application styling (4-column responsive grid)
 │   ├── data/
-│   │   └── seedDataset.js                      # Curated Karnataka scene triplets across 9 districts
+│   │   └── seedDataset.js                      # 82 curated Karnataka scene triplets across all 31 districts
 │   └── utils/
 │       ├── geminiService.js                    # Multimodal ASR, caption normalization, face/plate detector
 │       └── wavEncoder.js                       # 16,000 Hz Mono 16-bit PCM WAV resampler & encoder
@@ -84,17 +84,13 @@ Each row represents a complete triplet with the following columns:
 ## Dataset Coverage & Evaluation
 
 ### 1. Geographic & Category Distribution
+- **Total Verified Triplets:** 82 triplets (`82` photos ≥ 1280px JPEG, `82` spoken Kannada audio files, `82` literary Kannada `.txt` captions).
 - **Categories (5):** `Streets` (`ರಸ್ತೆಗಳು`), `Food` (`ಆಹಾರ`), `Festivals` (`ಹಬ್ಬ-ಜಾತ್ರೆ`), `Nature` (`ಪ್ರಕೃತಿ`), `Building` (`ಕಟ್ಟಡಗಳು`).
-- **Districts Covered (9):**
-  - Bengaluru Urban (MSRIT Campus, VV Puram Food Street, Commercial Street, BMTC Transport)
-  - Mysuru (Devaraja Market, Mysuru Palace Dasara Illumination)
-  - Shivamogga (Jog Falls in Sagara, Sharavathi River Backwaters)
-  - Udupi & Manipal (Sri Krishna Matha Ratha Beedi, Malpe Beach, Hasta Shilpa Heritage Village)
-  - Ramanagara (Channapatna Wooden Toy Artisans)
-  - Vijayapura (Gol Gumbaz Courtyard)
-  - Kalaburagi (Kalaburagi Railway Station Junction)
-  - Dharwad / Hubballi (Municipal Corporation Street)
-  - Kodagu (Madikeri Coffee & Pepper Estate)
+- **Districts Covered (All 31 Districts of Karnataka):**
+  - **Southern & Old Mysuru:** Bengaluru Urban, Bengaluru Rural, Mysuru, Mandya, Ramanagara, Chamarajanagar, Hassan, Tumakuru, Kolar, Chikkaballapura.
+  - **Malenadu & Central:** Shivamogga, Chikkamagaluru, Kodagu, Davanagere, Chitradurga.
+  - **Coastal (Karavali):** Dakshina Kannada (Mangaluru), Udupi (Manipal / Malpe), Uttara Kannada (Karwar / Gokarna / Murudeshwara / Dandeli).
+  - **Kittur & Kalyana Karnataka (North):** Dharwad (Hubballi), Belagavi, Bagalkot, Vijayapura (Bijapur), Gadag, Haveri, Kalaburagi, Bidar, Ballari, Vijayanagara (Hampi / Hosapete), Koppal, Raichur, Yadgir.
 
 ### 2. Caption Accuracy (WER / CER) & Voice-Search Relevance
 Run the evaluation benchmark to verify dataset integrity, Levenshtein Word Error Rate (WER), Character Error Rate (CER), and Top-1 retrieval accuracy:

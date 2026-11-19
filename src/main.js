@@ -859,9 +859,10 @@ addSceneToDatasetBtn.addEventListener("click", () => {
           ? lastAnnotatedData.tags_kn
           : prev.tags_kn || CATEGORY_DEFAULT_TAGS_KN[selectedCategory];
 
+      const cleanTitle = finalCaption.replace(/\.$/, "").split(/\s+/).slice(0, 7).join(" ");
       dataset[idx] = {
         ...prev,
-        title_kn: lastAnnotatedData?.title_kn || (finalCaption !== prev.corrected_caption_kn ? finalCaption.slice(0, 38) : prev.title_kn),
+        title_kn: lastAnnotatedData?.title_kn || (finalCaption !== prev.corrected_caption_kn ? cleanTitle : prev.title_kn),
         title_en: lastAnnotatedData?.title_en || prev.title_en,
         region: studioRegionInput.value.trim() || prev.region || "ಮೈಸೂರು (Mysuru)",
         category: selectedCategory,
@@ -893,9 +894,10 @@ addSceneToDatasetBtn.addEventListener("click", () => {
       ? lastAnnotatedData.tags_kn
       : CATEGORY_DEFAULT_TAGS_KN[selectedCategory] || ["ಕರ್ನಾಟಕ_ಸಂಸ್ಕೃತಿ", "ಜನಜೀವನ_ದೃಶ್ಯ"];
 
+  const cleanTitle = finalCaption.replace(/\.$/, "").split(/\s+/).slice(0, 7).join(" ");
   const newEntry = {
     id: newId,
-    title_kn: lastAnnotatedData?.title_kn || finalCaption.slice(0, 38),
+    title_kn: lastAnnotatedData?.title_kn || cleanTitle,
     title_en: lastAnnotatedData?.title_en || "Karnataka Cultural Scene",
     region: studioRegionInput.value.trim() || "ಮೈಸೂರು (Mysuru)",
     category: selectedCategory,
