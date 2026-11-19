@@ -25,9 +25,9 @@
         <span>➕</span>
         <span class="kn-text">ಹೊಸ ಚಿತ್ರ ಸೇರಿಸಿ (Add Photo)</span>
       </button>
-      <button id="exportJsonBtn" class="btn btn-secondary">
+      <button id="exportCsvBtn" class="btn btn-secondary" title="Download Metadata CSV (place, category, speaker ID)">
         <span>⬇️</span>
-        <span class="kn-text">ಡೇಟಾಸೆಟ್ (Dataset)</span>
+        <span class="kn-text">ಡೇಟಾಸೆಟ್ CSV (Metadata CSV)</span>
       </button>
     </div>
   </header>
@@ -45,7 +45,7 @@
           <input
             type="text"
             id="searchQueryInput"
-            placeholder="ಉದಾಹರಣೆಗೆ: “ಹಳದಿ ಹೂಮಾಲೆ ಇರುವ ಮಳಿಗೆ ತೋರಿಸು”..."
+            placeholder="ಉದಾಹರಣೆಗೆ: “ದೇವಸ್ಥಾನದ ಹೂವಿನ ಅಂಗಡಿ ತೋರಿಸು”..."
             aria-label="Search in Kannada"
           />
           <button id="clearSearchBtn" class="clear-input-btn" title="Clear" style="display: none;">✕</button>
@@ -63,21 +63,31 @@
 
       <div class="query-chips">
         <span class="chip-label kn-text">ಉದಾಹರಣೆಗಳು:</span>
-        <button class="query-chip kn-text" data-query="ಹಳದಿ ಹೂಮಾಲೆ ಇರುವ ಮಳಿಗೆ ತೋರಿಸು">“ಹಳದಿ ಹೂಮಾಲೆ ಇರುವ ಮಳಿಗೆ ತೋರಿಸು”</button>
+        <button class="query-chip kn-text" data-query="ದೇವಸ್ಥಾನದ ಹೂವಿನ ಅಂಗಡಿ ತೋರಿಸು">“ದೇವಸ್ಥಾನದ ಹೂವಿನ ಅಂಗಡಿ ತೋರಿಸು”</button>
+        <button class="query-chip kn-text" data-query="ನಮ್ಮ ಕಾಲೇಜಿನ ಹತ್ತಿರದ ಪಾನಿಪೂರಿ ಅಂಗಡಿ">“ನಮ್ಮ ಕಾಲೇಜಿನ ಹತ್ತಿರದ ಪಾನಿಪೂರಿ ಅಂಗಡಿ”</button>
+        <button class="query-chip kn-text" data-query="ದೀಪಗಳಿಂದ ಬೆಳಗಿದ ಮೈಸೂರು ಅರಮನೆ">“ದೀಪಗಳಿಂದ ಬೆಳಗಿದ ಮೈಸೂರು ಅರಮನೆ”</button>
         <button class="query-chip kn-text" data-query="ಬಿಸಿ ಫಿಲ್ಟರ್ ಕಾಫಿ ಮತ್ತು ಮಸಾಲೆ ದೋಸೆ">“ಬಿಸಿ ಫಿಲ್ಟರ್ ಕಾಫಿ ಮತ್ತು ಮಸಾಲೆ ದೋಸೆ”</button>
         <button class="query-chip kn-text" data-query="ಹಂಪಿಯ ಕಲ್ಲಿನ ರಥ">“ಹಂಪಿಯ ಕಲ್ಲಿನ ರಥ”</button>
         <button class="query-chip kn-text" data-query="ಯಕ್ಷಗಾನ ಕಲಾವಿದನ ಬಣ್ಣದ ವೇಷ">“ಯಕ್ಷಗಾನ ಕಲಾವಿದನ ಬಣ್ಣದ ವೇಷ”</button>
-        <button class="query-chip kn-text" data-query="ಚನ್ನಪಟ್ಟಣದ ಮರದ ಗೊಂಬೆಗಳು">“ಚನ್ನಪಟ್ಟಣದ ಮರದ ಗೊಂಬೆಗಳು”</button>
-        <button class="query-chip kn-text" data-query="ಸಂತೆಯಲ್ಲಿ ತಾಜಾ ತರಕಾರಿ ಅಂಗಡಿ">“ಸಂತೆಯಲ್ಲಿ ತಾಜಾ ತರಕಾರಿ ಅಂಗಡಿ”</button>
       </div>
     </section>
 
-    <!-- Results Count & Reset Row -->
+    <!-- Category Filter & Results Count Row -->
     <div class="results-bar">
-      <div id="searchStatusText" class="kn-text">ಎಲ್ಲಾ ಚಿತ್ರಗಳು (6)</div>
-      <button id="showAllBtn" class="btn btn-secondary btn-sm" style="display: none;">
-        <span class="kn-text">ಎಲ್ಲಾ ಚಿತ್ರಗಳನ್ನು ತೋರಿಸು (Show All)</span>
-      </button>
+      <div class="category-filters" id="categoryFilterBar">
+        <button class="cat-chip active kn-text" data-category="All">ಎಲ್ಲಾ (All)</button>
+        <button class="cat-chip kn-text" data-category="Streets">ರಸ್ತೆಗಳು (Streets)</button>
+        <button class="cat-chip kn-text" data-category="Food">ಆಹಾರ (Food)</button>
+        <button class="cat-chip kn-text" data-category="Festivals">ಹಬ್ಬ-ಜಾತ್ರೆ (Festivals)</button>
+        <button class="cat-chip kn-text" data-category="Nature">ಪ್ರಕೃತಿ (Nature)</button>
+        <button class="cat-chip kn-text" data-category="Campus">ಕ್ಯಾಂಪಸ್ (Campus)</button>
+      </div>
+      <div style="display: flex; align-items: center; gap: 0.65rem;">
+        <div id="searchStatusText" class="kn-text">ಎಲ್ಲಾ ಚಿತ್ರಗಳು (8)</div>
+        <button id="showAllBtn" class="btn btn-secondary btn-sm" style="display: none;">
+          <span class="kn-text">ಎಲ್ಲಾ ಚಿತ್ರಗಳನ್ನು ತೋರಿಸು (Show All)</span>
+        </button>
+      </div>
     </div>
 
     <!-- Photo Gallery Grid -->
@@ -87,31 +97,35 @@
     <section class="how-to" aria-labelledby="howToTitle">
       <h2 id="howToTitle">How to use Chitra-Maathu</h2>
       <ol class="how-steps">
-        <li><strong>Search by voice.</strong> Press <em>Speak</em>, say what you want in Kannada (for example "ಹಳದಿ ಹೂಮಾಲೆ ಇರುವ ಮಳಿಗೆ ತೋರಿಸು"), then press it again to stop. Matching photos appear below.</li>
-        <li><strong>Or type it.</strong> Write your search in Kannada or English and press <em>Search</em>, or tap one of the example chips.</li>
-        <li><strong>Listen.</strong> Press <em>Play Audio</em> on any photo to hear its Kannada description.</li>
-        <li><strong>Add your own photo.</strong> Press <em>Add Photo</em>, upload an image, record your voice describing it in Kannada, pick the district, then write or auto-generate the caption and save.</li>
-        <li><strong>Download the dataset.</strong> Press <em>Dataset</em> at the top to export every photo, transcript and caption as JSON.</li>
+        <li><strong>Search by voice.</strong> Press <em>Speak</em>, say what you want in Kannada (for example "ದೇವಸ್ಥಾನದ ಹೂವಿನ ಅಂಗಡಿ ತೋರಿಸು"), then press it again to stop. Matching photos appear below.</li>
+        <li><strong>Or type / filter by category.</strong> Write your search in Kannada or English and press <em>Search</em>, tap one of the example chips, or filter by scene category (Streets, Food, Festivals, Nature, Campus).</li>
+        <li><strong>Listen.</strong> Press <em>Play Audio</em> on any photo to hear its spoken Kannada description.</li>
+        <li><strong>Add your own photo triplet.</strong> Press <em>Add Photo</em>, upload an image (drag on the image if you need to blur faces or number plates), record a 15–30 s spoken description in Kannada, pick the district, category, and Speaker ID, then save.</li>
+        <li><strong>Download the Metadata CSV.</strong> Press <em>Metadata CSV</em> at the top to export every triplet row (place, category, speaker ID, photo, audio, and caption).</li>
       </ol>
-    </section>  </main>
+    </section>
+  </main>
 
-  <!-- Simple Modal to Add New Photo + Voice + Caption -->
+  <!-- Modal to Add New Photo + 15-30s Voice + Caption Triplet -->
   <div id="addSceneModal" class="modal-backdrop" aria-hidden="true">
     <div class="modal-card" role="dialog" aria-labelledby="modalTitle">
       <div class="modal-header">
-        <h3 id="modalTitle" class="kn-text">ಹೊಸ ಚಿತ್ರ ಮತ್ತು ಧ್ವನಿ ಸೇರಿಸಿ (Add Photo & Voice)</h3>
+        <h3 id="modalTitle" class="kn-text">ಹೊಸ ಚಿತ್ರ ಮತ್ತು ಧ್ವನಿ ಸೇರಿಸಿ (Add Photo Triplet)</h3>
         <button id="closeAddModalBtn" class="close-modal-btn" aria-label="Close">✕</button>
       </div>
 
       <div class="modal-body">
-        <!-- 1. Photo Upload -->
+        <!-- 1. Photo Upload + Optional Face/Plate Blur -->
         <div class="form-group">
-          <label class="kn-text">1. ಚಿತ್ರ ಆಯ್ಕೆಮಾಡಿ (Upload Photo)</label>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+            <label class="kn-text" style="margin: 0;">1. ಚಿತ್ರ ಆಯ್ಕೆಮಾಡಿ (Upload Photo · Drag on photo to blur faces/plates)</label>
+            <button id="resetBlurBtn" class="btn btn-secondary btn-sm" style="display: none; padding: 0.2rem 0.55rem; font-size: 0.75rem;">↩️ Undo Blur</button>
+          </div>
           <div class="upload-preview-box">
-            <img id="previewImage" src="" alt="Preview" style="display: none;" />
+            <canvas id="uploadCanvas" width="1280" height="853" style="display: none; max-width: 100%; max-height: 185px; cursor: crosshair;"></canvas>
             <div id="uploadPlaceholder" class="upload-placeholder">
               <span>📷</span>
-              <p class="kn-text">ಕರ್ನಾಟಕದ ಜನಜೀವನದ ಚಿತ್ರವನ್ನು ಇಲ್ಲಿ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ</p>
+              <p class="kn-text">ಕರ್ನಾಟಕದ ಜನಜೀವನದ ಚಿತ್ರವನ್ನು ಇಲ್ಲಿ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ (JPEG, 1280px+)</p>
             </div>
           </div>
           <label class="btn btn-secondary btn-sm" style="margin-top: 0.5rem; cursor: pointer; display: inline-flex;">
@@ -120,79 +134,104 @@
           </label>
         </div>
 
-        <!-- 2. Voice Recording -->
+        <!-- 2. Voice Recording (15-30s) -->
         <div class="form-group">
-          <label class="kn-text">2. ಕನ್ನಡದಲ್ಲಿ ಧ್ವನಿ ವಿವರಣೆ (Record Voice Description)</label>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+            <label class="kn-text" style="margin: 0;">2. ಕನ್ನಡದಲ್ಲಿ ಧ್ವನಿ ವಿವರಣೆ (Record 15–30 s Voice Description)</label>
+            <span id="recordingTimerBadge" class="timer-badge">00:00s (Target: 15–30s)</span>
+          </div>
           <div class="recorder-row">
             <button id="studioRecordBtn" class="btn btn-voice btn-sm">
               🎙️ <span class="kn-text">ಧ್ವನಿ ರೆಕಾರ್ಡ್ ಮಾಡಿ (Record)</span>
             </button>
-            <span id="studioAudioInfo" class="recorder-status">ಮೈಕ್ ಒತ್ತಿ ಚಿತ್ರದ ಬಗ್ಗೆ ಕನ್ನಡದಲ್ಲಿ ಹೇಳಿ</span>
+            <span id="studioAudioInfo" class="recorder-status">ಮೈಕ್ ಒತ್ತಿ ಚಿತ್ರದ ಬಗ್ಗೆ ಕನ್ನಡದಲ್ಲಿ 15–30 ಸೆಕೆಂಡ್ ಮಾತನಾಡಿ</span>
           </div>
           <audio id="studioAudioPreview" controls style="width: 100%; height: 36px; margin-top: 0.5rem; display: none;"></audio>
         </div>
 
-        <!-- 3. Place & Captions -->
-        <div class="form-row-2">
+        <!-- 3. Metadata CSV Fields: Place, Category, Speaker ID -->
+        <div class="form-row-3">
           <div class="form-group">
             <label for="studioRegionInput" class="kn-text">ಸ್ಥಳ / ಜಿಲ್ಲೆ (Place)</label>
-            <input type="text" id="studioRegionInput" class="form-control" placeholder="Type or pick a district / ಜಿಲ್ಲೆ ಆರಿಸಿ" list="karnatakaDistricts" autocomplete="off" />
-      <datalist id="karnatakaDistricts">
-        <option value="ಬಾಗಲಕೋಟೆ (Bagalkot)"></option>
-        <option value="ಬಳ್ಳಾರಿ (Ballari)"></option>
-        <option value="ಬೆಳಗಾವಿ (Belagavi)"></option>
-        <option value="ಬೆಂಗಳೂರು ಗ್ರಾಮಾಂತರ (Bengaluru Rural)"></option>
-        <option value="ಬೆಂಗಳೂರು ನಗರ (Bengaluru Urban)"></option>
-        <option value="ಬೀದರ್ (Bidar)"></option>
-        <option value="ಚಾಮರಾಜನಗರ (Chamarajanagar)"></option>
-        <option value="ಚಿಕ್ಕಬಳ್ಳಾಪುರ (Chikkaballapura)"></option>
-        <option value="ಚಿಕ್ಕಮಗಳೂರು (Chikkamagaluru)"></option>
-        <option value="ಚಿತ್ರದುರ್ಗ (Chitradurga)"></option>
-        <option value="ದಕ್ಷಿಣ ಕನ್ನಡ (Dakshina Kannada (Mangaluru))"></option>
-        <option value="ದಾವಣಗೆರೆ (Davanagere)"></option>
-        <option value="ಧಾರವಾಡ (Dharwad)"></option>
-        <option value="ಗದಗ (Gadag)"></option>
-        <option value="ಕಲಬುರಗಿ (Kalaburagi)"></option>
-        <option value="ಹಾಸನ (Hassan)"></option>
-        <option value="ಹಾವೇರಿ (Haveri)"></option>
-        <option value="ಕೊಡಗು (Kodagu)"></option>
-        <option value="ಕೋಲಾರ (Kolar)"></option>
-        <option value="ಕೊಪ್ಪಳ (Koppal)"></option>
-        <option value="ಮಂಡ್ಯ (Mandya)"></option>
-        <option value="ಮೈಸೂರು (Mysuru)"></option>
-        <option value="ರಾಯಚೂರು (Raichur)"></option>
-        <option value="ರಾಮನಗರ (Ramanagara)"></option>
-        <option value="ಶಿವಮೊಗ್ಗ (Shivamogga)"></option>
-        <option value="ತುಮಕೂರು (Tumakuru)"></option>
-        <option value="ಉಡುಪಿ (Udupi)"></option>
-        <option value="ಉತ್ತರ ಕನ್ನಡ (Uttara Kannada (Karwar))"></option>
-        <option value="ವಿಜಯನಗರ (Vijayanagara (Hosapete))"></option>
-        <option value="ವಿಜಯಪುರ (Vijayapura)"></option>
-        <option value="ಯಾದಗಿರಿ (Yadgir)"></option>
-      </datalist>
+            <input type="text" id="studioRegionInput" class="form-control" placeholder="ಜಿಲ್ಲೆ ಆರಿಸಿ / District" list="karnatakaDistricts" autocomplete="off" />
+            <datalist id="karnatakaDistricts">
+              <option value="ಬಾಗಲಕೋಟೆ (Bagalkot)"></option>
+              <option value="ಬಳ್ಳಾರಿ (Ballari)"></option>
+              <option value="ಬೆಳಗಾವಿ (Belagavi)"></option>
+              <option value="ಬೆಂಗಳೂರು ಗ್ರಾಮಾಂತರ (Bengaluru Rural)"></option>
+              <option value="ಬೆಂಗಳೂರು ನಗರ (Bengaluru Urban)"></option>
+              <option value="ಬೀದರ್ (Bidar)"></option>
+              <option value="ಚಾಮರಾಜನಗರ (Chamarajanagar)"></option>
+              <option value="ಚಿಕ್ಕಬಳ್ಳಾಪುರ (Chikkaballapura)"></option>
+              <option value="ಚಿಕ್ಕಮಗಳೂರು (Chikkamagaluru)"></option>
+              <option value="ಚಿತ್ರದುರ್ಗ (Chitradurga)"></option>
+              <option value="ದಕ್ಷಿಣ ಕನ್ನಡ (Dakshina Kannada (Mangaluru))"></option>
+              <option value="ದಾವಣಗೆರೆ (Davanagere)"></option>
+              <option value="ಧಾರವಾಡ (Dharwad)"></option>
+              <option value="ಗದಗ (Gadag)"></option>
+              <option value="ಕಲಬುರಗಿ (Kalaburagi)"></option>
+              <option value="ಹಾಸನ (Hassan)"></option>
+              <option value="ಹಾವೇರಿ (Haveri)"></option>
+              <option value="ಕೊಡಗು (Kodagu)"></option>
+              <option value="ಕೋಲಾರ (Kolar)"></option>
+              <option value="ಕೊಪ್ಪಳ (Koppal)"></option>
+              <option value="ಮಂಡ್ಯ (Mandya)"></option>
+              <option value="ಮೈಸೂರು (Mysuru)"></option>
+              <option value="ರಾಯಚೂರು (Raichur)"></option>
+              <option value="ರಾಮನಗರ (Ramanagara)"></option>
+              <option value="ಶಿವಮೊಗ್ಗ (Shivamogga)"></option>
+              <option value="ತುಮಕೂರು (Tumakuru)"></option>
+              <option value="ಉಡುಪಿ (Udupi)"></option>
+              <option value="ಉತ್ತರ ಕನ್ನಡ (Uttara Kannada (Karwar))"></option>
+              <option value="ವಿಜಯನಗರ (Vijayanagara (Hosapete))"></option>
+              <option value="ವಿಜಯಪುರ (Vijayapura)"></option>
+              <option value="ಯಾದಗಿರಿ (Yadgir)"></option>
+            </datalist>
           </div>
-          <div class="form-group" style="display: flex; align-items: flex-end;">
-            <button id="autoCaptionBtn" class="btn btn-secondary btn-sm" style="width: 100%; justify-content: center; height: 39px;">
+
+          <div class="form-group">
+            <label for="studioCategorySelect" class="kn-text">ವರ್ಗ (Category)</label>
+            <select id="studioCategorySelect" class="form-control">
+              <option value="Streets">ರಸ್ತೆಗಳು (Streets)</option>
+              <option value="Food">ಆಹಾರ (Food)</option>
+              <option value="Festivals">ಹಬ್ಬ-ಜಾತ್ರೆ (Festivals)</option>
+              <option value="Nature">ಪ್ರಕೃತಿ (Nature)</option>
+              <option value="Campus">ಕ್ಯಾಂಪಸ್ (Campus)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="studioSpeakerInput" class="kn-text">ಸ್ಪೀಕರ್ ID (Speaker ID)</label>
+            <input type="text" id="studioSpeakerInput" class="form-control" value="SPK-01" list="speakerIdList" />
+            <datalist id="speakerIdList">
+              <option value="SPK-01"></option>
+              <option value="SPK-02"></option>
+              <option value="SPK-03"></option>
+              <option value="SPK-04"></option>
+            </datalist>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+            <label for="studioVerbatimInput" class="kn-text" style="margin: 0;">ಆಡುಮಾತಿನ ಧ್ವನಿ ಪಠ್ಯ (Spoken Kannada ASR)</label>
+            <button id="autoCaptionBtn" class="btn btn-secondary btn-sm" style="padding: 0.25rem 0.65rem; font-size: 0.78rem;">
               ✨ <span class="kn-text">ಸ್ವಯಂ ವಿವರಣೆ ರಚಿಸಿ (Auto-Caption)</span>
             </button>
           </div>
+          <input type="text" id="studioVerbatimInput" class="form-control" placeholder="ಉದಾ: ಇದು... ಹಾ... ನಮ್ಮ ಕಾಲೇಜ್ ಹತ್ರ ಇರೋ ಪಾನಿಪೂರಿ ಅಂಗಡಿ..." />
         </div>
 
         <div class="form-group">
-          <label for="studioVerbatimInput" class="kn-text">ಆಡುಮಾತಿನ ಧ್ವನಿ ಪಠ್ಯ (Spoken Kannada)</label>
-          <input type="text" id="studioVerbatimInput" class="form-control" placeholder="ಉದಾ: ಇಲ್ಲಿ ಜಾತ್ರೆಯಲ್ಲಿ ಹಳದಿ ಹೂಮಾಲೆ ತೂಗು ಹಾಕಿದ್ದಾರೆ..." />
-        </div>
-
-        <div class="form-group">
-          <label for="studioCaptionInput" class="kn-text">ಕನ್ನಡ ಶೀರ್ಷಿಕೆ / ವಿವರಣೆ (Standard Kannada Caption)</label>
-          <textarea id="studioCaptionInput" class="form-control" rows="2" placeholder="ಉದಾ: ಜಾತ್ರೆಯ ಹೂವಿನ ಮಳಿಗೆಯಲ್ಲಿ ಕಟ್ಟಿರುವ ತಾಜಾ ಹಳದಿ ಹೂಮಾಲೆಗಳು."></textarea>
+          <label for="studioCaptionInput" class="kn-text">ಕನ್ನಡ ಶೀರ್ಷಿಕೆ / ವಿವರಣೆ (Clean Kannada Caption)</label>
+          <textarea id="studioCaptionInput" class="form-control" rows="2" placeholder="ಉದಾ: ನಮ್ಮ ಕಾಲೇಜಿನ ಹತ್ತಿರದ ಪಾನಿಪೂರಿ ಅಂಗಡಿ."></textarea>
         </div>
       </div>
 
       <div class="modal-footer">
         <button id="cancelModalBtn" class="btn btn-secondary">Cancel</button>
         <button id="addSceneToDatasetBtn" class="btn btn-primary">
-          <span class="kn-text">ಸೇರಿಸಿ (Save to Gallery)</span>
+          <span class="kn-text">ಸೇರಿಸಿ (Save Triplet)</span>
         </button>
       </div>
     </div>

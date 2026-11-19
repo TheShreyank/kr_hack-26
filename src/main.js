@@ -2,7 +2,16 @@ import { SEED_DATASET } from "./data/seedDataset.js";
 import { Wav16kRecorder, blobToBase64 } from "./utils/wavEncoder.js";
 import { searchScenes, generateSceneCaption } from "./utils/geminiService.js";
 
+const CATEGORY_LABELS_KN = {
+  Streets: "ರಸ್ತೆಗಳು (Streets)",
+  Food: "ಆಹಾರ (Food)",
+  Festivals: "ಹಬ್ಬ-ಜಾತ್ರೆ (Festivals)",
+  Nature: "ಪ್ರಕೃತಿ (Nature)",
+  Campus: "ಕ್ಯಾಂಪಸ್ (Campus)"
+};
+
 let dataset = [...SEED_DATASET];
+let activeCategory = "All";
 let currentResults = dataset.map((item) => ({
   item,
   score: 1,
@@ -25,7 +34,14 @@ let studioWavRecorder = null;
 let studioSpeechRecognition = null;
 let studioFinalTranscript = "";
 let recordedStudioWavBlob = null;
-let uploadedImageDataUrl = "";
+let recordedDurationSec = 0;
+let recordingTimerInterval = null;
+let recordingSecondsElapsed = 0;
+
+// Canvas & Blur State
+let uploadedOriginalImage = null;
+let hasUploadedPhoto = false;
+let isBlurring = false;
 
 // DOM Elements
 const searchQueryInput = document.getElementById("searchQueryInput");
@@ -36,7 +52,7 @@ const runSearchBtn = document.getElementById("runSearchBtn");
 const showAllBtn = document.getElementById("showAllBtn");
 const searchStatusText = document.getElementById("searchStatusText");
 const scenesGrid = document.getElementById("scenesGrid");
-const exportJsonBtn = document.getElementById("exportJsonBtn");
+const exportCsvBtn = document.getElementById("exportCsvBtn");
 
 // Modal Elements
 const addSceneModal = document.getElementById("addSceneModal");
@@ -44,19 +60,30 @@ const openAddModalBtn = document.getElementById("openAddModalBtn");
 const closeAddModalBtn = document.getElementById("closeAddModalBtn");
 const cancelModalBtn = document.getElementById("cancelModalBtn");
 const imageUploadInput = document.getElementById("imageUploadInput");
-const previewImage = document.getElementById("previewImage");
+const uploadCanvas = document.getElementById("uploadCanvas");
+const uploadCtx = uploadCanvas.getContext("2d");
+const resetBlurBtn = document.getElementById("resetBlurBtn");
 const uploadPlaceholder = document.getElementById("uploadPlaceholder");
 
 const studioRecordBtn = document.getElementById("studioRecordBtn");
+const recordingTimerBadge = document.getElementById("recordingTimerBadge");
 const studioAudioInfo = document.getElementById("studioAudioInfo");
 const studioAudioPreview = document.getElementById("studioAudioPreview");
 const studioRegionInput = document.getElementById("studioRegionInput");
+const studioCategorySelect = document.getElementById("studioCategorySelect");
+const studioSpeakerInput = document.getElementById("studioSpeakerInput");
 const studioVerbatimInput = document.getElementById("studioVerbatimInput");
 const studioCaptionInput = document.getElementById("studioCaptionInput");
 const autoCaptionBtn = document.getElementById("autoCaptionBtn");
 const addSceneToDatasetBtn = document.getElementById("addSceneToDatasetBtn");
 
 const toastBanner = document.getElementById("toastBanner");
+
+// Restore last speaker ID if saved
+const savedSpeaker = localStorage.getItem("chitra_maathu_speaker_id");
+if (savedSpeaker) {
+  studioSpeakerInput.value = savedSpeaker;
+}
 
 function showToast(message) {
   toastBanner.textContent = message;
@@ -98,7 +125,6 @@ function createContinuousKannadaRecognition({ isActiveFn, onTranscriptUpdate }) 
     }
   };
 
-  // Auto-restart if Chrome/Edge stops recognition on a natural pause while recording is still active
   recognition.onend = () => {
     if (isActiveFn()) {
       try {
@@ -187,30 +213,40 @@ function fallbackSpeech(item) {
   window.speechSynthesis.speak(utterance);
 }
 
+function getFilteredResultsByCategory(resultsList) {
+  if (activeCategory === "All") return resultsList;
+  return resultsList.filter((entry) => entry.item.category === activeCategory);
+}
+
 // Render Photo Gallery Grid
 function renderScenesGrid(results, isFiltered = false) {
   stopActiveAudio();
   scenesGrid.innerHTML = "";
 
-  if (results.length === 0) {
+  const displayList = getFilteredResultsByCategory(results);
+
+  if (displayList.length === 0) {
     scenesGrid.innerHTML = `
-      <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border-subtle);">
+      <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; background: var(--bg-card); border-radius: 16px; box-shadow: var(--shadow-md);">
         <h3 class="kn-text" style="margin-bottom: 0.4rem;">ಯಾವುದೇ ಹೊಂದಾಣಿಕೆಯ ಚಿತ್ರಗಳು ಕಂಡುಬಂದಿಲ್ಲ</h3>
-        <p style="color: var(--text-muted); font-size: 0.9rem;">Try searching for “ಹಳದಿ ಹೂಮಾಲೆ”, “ದೋಸೆ ಕಾಫಿ”, “ಹಂಪಿ ರಥ”, or “ಯಕ್ಷಗಾನ”.</p>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Try searching for “ದೇವಸ್ಥಾನದ ಹೂವಿನ ಅಂಗಡಿ”, “ಕಾಲೇಜಿನ ಹತ್ತಿರದ ಪಾನಿಪೂರಿ ಅಂಗಡಿ”, “ಮೈಸೂರು ಅರಮನೆ”, or switch category to “ಎಲ್ಲಾ (All)”.</p>
       </div>
     `;
     return;
   }
 
-  for (const entry of results) {
+  for (const entry of displayList) {
     const { item, score, matchedTokens = [] } = entry;
     const matchedSet = new Set(matchedTokens);
 
     const card = document.createElement("article");
     card.className = "scene-card";
 
-    const scoreBadgeHtml = isFiltered
+    const categoryBadgeText = item.category_kn || CATEGORY_LABELS_KN[item.category] || item.category || "";
+    const rightBadgeHtml = isFiltered
       ? `<span class="badge-pill badge-score">${Math.round(score * 100)}% ಹೊಂದಾಣಿಕೆ</span>`
+      : categoryBadgeText
+      ? `<span class="badge-pill kn-text">${categoryBadgeText}</span>`
       : "";
 
     const tagsHtml = (item.tags_kn || [])
@@ -236,7 +272,7 @@ function renderScenesGrid(results, isFiltered = false) {
         </div>
         <div class="scene-badges-top">
           <span class="badge-pill kn-text">📍 ${item.region}</span>
-          ${scoreBadgeHtml}
+          ${rightBadgeHtml}
         </div>
       </div>
 
@@ -273,6 +309,16 @@ function renderScenesGrid(results, isFiltered = false) {
   }
 }
 
+function updateStatusText(isFiltered) {
+  const cleanQ = (searchQueryInput.value || "").trim();
+  const visibleCount = getFilteredResultsByCategory(currentResults).length;
+  if (isFiltered && cleanQ) {
+    searchStatusText.innerHTML = `<strong>“${cleanQ}”</strong> — <strong>${visibleCount}</strong> ಚಿತ್ರಗಳು`;
+  } else {
+    searchStatusText.textContent = `ಚಿತ್ರಗಳು (${visibleCount})`;
+  }
+}
+
 // Search Execution
 async function executeSearch({ queryText = "", audioBase64 = null } = {}) {
   searchStatusText.textContent = "⏳ ಹುಡುಕಲಾಗುತ್ತಿದೆ...";
@@ -289,24 +335,25 @@ async function executeSearch({ queryText = "", audioBase64 = null } = {}) {
 
   const cleanQ = (searchQueryInput.value || "").trim();
   clearSearchBtn.style.display = cleanQ ? "block" : "none";
-  showAllBtn.style.display = cleanQ ? "inline-flex" : "none";
+  showAllBtn.style.display = cleanQ || activeCategory !== "All" ? "inline-flex" : "none";
 
   const isFiltered = Boolean(cleanQ);
   currentResults = response.results;
 
-  searchStatusText.innerHTML = isFiltered
-    ? `<strong>“${cleanQ}”</strong> — <strong>${currentResults.length}</strong> ಚಿತ್ರಗಳು ಕಂಡುಬಂದಿವೆ`
-    : `ಎಲ್ಲಾ ಚಿತ್ರಗಳು (${dataset.length})`;
-
+  updateStatusText(isFiltered);
   renderScenesGrid(currentResults, isFiltered);
 }
 
 function resetSearch() {
   searchQueryInput.value = "";
+  activeCategory = "All";
+  document.querySelectorAll(".cat-chip").forEach((c) => {
+    c.classList.toggle("active", c.getAttribute("data-category") === "All");
+  });
   clearSearchBtn.style.display = "none";
   showAllBtn.style.display = "none";
   currentResults = dataset.map((item) => ({ item, score: 1, matchedTokens: [] }));
-  searchStatusText.textContent = `ಎಲ್ಲಾ ಚಿತ್ರಗಳು (${dataset.length})`;
+  updateStatusText(false);
   renderScenesGrid(currentResults, false);
 }
 
@@ -335,6 +382,19 @@ document.querySelectorAll(".query-chip").forEach((chip) => {
   });
 });
 
+// Category Filter Chips
+document.querySelectorAll(".cat-chip").forEach((chip) => {
+  chip.addEventListener("click", () => {
+    document.querySelectorAll(".cat-chip").forEach((c) => c.classList.remove("active"));
+    chip.classList.add("active");
+    activeCategory = chip.getAttribute("data-category");
+    const isFiltered = Boolean(searchQueryInput.value.trim());
+    showAllBtn.style.display = isFiltered || activeCategory !== "All" ? "inline-flex" : "none";
+    updateStatusText(isFiltered);
+    renderScenesGrid(currentResults, isFiltered);
+  });
+});
+
 // Voice Search Button
 voiceSearchBtn.addEventListener("click", async () => {
   if (!isVoiceSearching) {
@@ -359,7 +419,7 @@ voiceSearchBtn.addEventListener("click", async () => {
         searchSpeechRecognition.start();
       }
 
-      showToast("🎙️ ಕನ್ನಡದಲ್ಲಿ ಮಾತನಾಡಿ... (Speak your full sentence)");
+      showToast("🎙️ ಕನ್ನಡದಲ್ಲಿ ಮಾತನಾಡಿ... (Speak your full query)");
     } catch (err) {
       isVoiceSearching = false;
       voiceSearchBtn.classList.remove("recording");
@@ -392,7 +452,7 @@ voiceSearchBtn.addEventListener("click", async () => {
 });
 
 // ======================================================
-// ADD PHOTO & VOICE MODAL
+// ADD PHOTO & VOICE TRIPLET MODAL
 // ======================================================
 
 function openModal() {
@@ -410,25 +470,86 @@ openAddModalBtn.addEventListener("click", openModal);
 closeAddModalBtn.addEventListener("click", closeModal);
 cancelModalBtn.addEventListener("click", closeModal);
 
+// Upload Photo onto 1280px+ Canvas + Drag-to-Blur Faces/Plates
 imageUploadInput.addEventListener("change", (e) => {
   const file = e.target.files?.[0];
   if (!file) return;
   const reader = new FileReader();
   reader.onload = () => {
-    uploadedImageDataUrl = reader.result;
-    previewImage.src = uploadedImageDataUrl;
-    previewImage.style.display = "block";
-    uploadPlaceholder.style.display = "none";
+    const img = new Image();
+    img.onload = () => {
+      const targetW = Math.max(1280, img.width);
+      const targetH = Math.round((img.height / img.width) * targetW);
+      uploadCanvas.width = targetW;
+      uploadCanvas.height = targetH;
+      uploadCtx.drawImage(img, 0, 0, targetW, targetH);
+      uploadedOriginalImage = img;
+      hasUploadedPhoto = true;
+      uploadCanvas.style.display = "block";
+      uploadPlaceholder.style.display = "none";
+      resetBlurBtn.style.display = "inline-flex";
+    };
+    img.src = reader.result;
   };
   reader.readAsDataURL(file);
 });
 
+function applyCanvasBlur(clientX, clientY) {
+  if (!hasUploadedPhoto) return;
+  const rect = uploadCanvas.getBoundingClientRect();
+  const scaleX = uploadCanvas.width / rect.width;
+  const scaleY = uploadCanvas.height / rect.height;
+  const x = (clientX - rect.left) * scaleX;
+  const y = (clientY - rect.top) * scaleY;
+  const radius = Math.round(uploadCanvas.width * 0.035);
+  const blockSize = Math.max(12, Math.round(radius / 3));
+
+  const startX = Math.max(0, Math.floor(x - radius));
+  const startY = Math.max(0, Math.floor(y - radius));
+  const size = radius * 2;
+
+  for (let px = startX; px < Math.min(uploadCanvas.width, startX + size); px += blockSize) {
+    for (let py = startY; py < Math.min(uploadCanvas.height, startY + size); py += blockSize) {
+      const dx = px - x;
+      const dy = py - y;
+      if (dx * dx + dy * dy <= radius * radius) {
+        const pixel = uploadCtx.getImageData(px, py, 1, 1).data;
+        uploadCtx.fillStyle = `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
+        uploadCtx.fillRect(px, py, blockSize, blockSize);
+      }
+    }
+  }
+}
+
+uploadCanvas.addEventListener("mousedown", (e) => {
+  isBlurring = true;
+  applyCanvasBlur(e.clientX, e.clientY);
+});
+
+window.addEventListener("mousemove", (e) => {
+  if (!isBlurring) return;
+  applyCanvasBlur(e.clientX, e.clientY);
+});
+
+window.addEventListener("mouseup", () => {
+  isBlurring = false;
+});
+
+resetBlurBtn.addEventListener("click", () => {
+  if (uploadedOriginalImage) {
+    uploadCtx.drawImage(uploadedOriginalImage, 0, 0, uploadCanvas.width, uploadCanvas.height);
+    showToast("↩️ ಚಿತ್ರದ ಬ್ಲರ್ ತೆಗೆಯಲಾಗಿದೆ (Blur reset).");
+  }
+});
+
 async function runAudioAndImageTranscription() {
   autoCaptionBtn.disabled = true;
-  autoCaptionBtn.textContent = "⏳ ಧ್ವನಿ ಪಠ್ಯ ರಚಿಸಲಾಗುತ್ತಿದೆ...";
+  autoCaptionBtn.textContent = "⏳ ರಚಿಸಲಾಗುತ್ತಿದೆ...";
 
   try {
-    const imageBase64 = uploadedImageDataUrl ? uploadedImageDataUrl.split(",")[1] : null;
+    const imageBase64 = hasUploadedPhoto
+      ? uploadCanvas.toDataURL("image/jpeg", 0.9).split(",")[1]
+      : null;
     const audioBase64 = recordedStudioWavBlob ? await blobToBase64(recordedStudioWavBlob) : null;
 
     const annotated = await generateSceneCaption({
@@ -453,14 +574,33 @@ async function runAudioAndImageTranscription() {
   }
 }
 
+function updateTimerDisplay(sec) {
+  const padded = String(sec).padStart(2, "0");
+  if (sec >= 15 && sec <= 30) {
+    recordingTimerBadge.classList.add("ready");
+    recordingTimerBadge.textContent = `00:${padded}s (15–30s Target ✓)`;
+  } else {
+    recordingTimerBadge.classList.remove("ready");
+    recordingTimerBadge.textContent = `00:${padded}s (Target: 15–30s)`;
+  }
+}
+
 studioRecordBtn.addEventListener("click", async () => {
   if (!isStudioRecording) {
     try {
       isStudioRecording = true;
       studioFinalTranscript = "";
+      recordingSecondsElapsed = 0;
+      updateTimerDisplay(0);
+
       studioRecordBtn.classList.add("recording");
       studioRecordBtn.innerHTML = `⏹️ <span class="kn-text">ನಿಲ್ಲಿಸಿ (Stop)</span>`;
-      studioAudioInfo.textContent = "ರೆಕಾರ್ಡ್ ಆಗುತ್ತಿದೆ... ಪೂರ್ಣ ವಾಕ್ಯವನ್ನು ಮಾತನಾಡಿ";
+      studioAudioInfo.textContent = "ರೆಕಾರ್ಡ್ ಆಗುತ್ತಿದೆ... ಪೂರ್ಣ ವಾಕ್ಯವನ್ನು ಮಾತನಾಡಿ (15–30s)";
+
+      recordingTimerInterval = setInterval(() => {
+        recordingSecondsElapsed += 1;
+        updateTimerDisplay(recordingSecondsElapsed);
+      }, 1000);
 
       studioWavRecorder = new Wav16kRecorder();
       await studioWavRecorder.start();
@@ -477,12 +617,14 @@ studioRecordBtn.addEventListener("click", async () => {
       }
     } catch (err) {
       isStudioRecording = false;
+      clearInterval(recordingTimerInterval);
       studioRecordBtn.classList.remove("recording");
       studioRecordBtn.innerHTML = `🎙️ <span class="kn-text">ಧ್ವನಿ ರೆಕಾರ್ಡ್ ಮಾಡಿ (Record)</span>`;
       showToast("⚠️ ಮೈಕ್ರೊಫೋನ್ ಲಭ್ಯವಿಲ್ಲ.");
     }
   } else {
     isStudioRecording = false;
+    clearInterval(recordingTimerInterval);
     studioRecordBtn.classList.remove("recording");
     studioRecordBtn.innerHTML = `🎙️ <span class="kn-text">ಧ್ವನಿ ರೆಕಾರ್ಡ್ ಮಾಡಿ (Record)</span>`;
 
@@ -496,11 +638,11 @@ studioRecordBtn.addEventListener("click", async () => {
       const result = await studioWavRecorder.stop();
       if (result && result.wavBlob) {
         recordedStudioWavBlob = result.wavBlob;
+        recordedDurationSec = Number(result.durationSec);
         studioAudioPreview.src = URL.createObjectURL(result.wavBlob);
         studioAudioPreview.style.display = "block";
         studioAudioInfo.textContent = `✓ ಧ್ವನಿ ರೆಕಾರ್ಡ್ ಆಗಿದೆ (${result.durationSec}s) — ಪೂರ್ಣ ವಾಕ್ಯವನ್ನು ಪರಿವರ್ತಿಸಲಾಗುತ್ತಿದೆ...`;
 
-        // Automatically transcribe the full recorded WAV audio into complete Kannada sentences
         await runAudioAndImageTranscription();
         studioAudioInfo.textContent = `✓ ಧ್ವನಿ ರೆಕಾರ್ಡ್ ಮತ್ತು ಪಠ್ಯ ಸಿದ್ಧವಾಗಿದೆ (${result.durationSec}s)`;
       }
@@ -521,12 +663,23 @@ addSceneToDatasetBtn.addEventListener("click", () => {
 
   const finalCaption = caption || verbatim;
   const newId = `CM-KA-${String(dataset.length + 1).padStart(3, "0")}`;
+  const selectedCategory = studioCategorySelect.value || "Streets";
+  const speakerId = studioSpeakerInput.value.trim() || "SPK-01";
+  localStorage.setItem("chitra_maathu_speaker_id", speakerId);
+
+  const imageDataUrl = hasUploadedPhoto
+    ? uploadCanvas.toDataURL("image/jpeg", 0.92)
+    : "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=1400&q=85";
 
   const newEntry = {
     id: newId,
     title_kn: finalCaption.slice(0, 38),
     title_en: "Karnataka Scene",
-    region: studioRegionInput.value.trim() || "ಕರ್ನಾಟಕ",
+    region: studioRegionInput.value.trim() || "ಮೈಸೂರು (Mysuru)",
+    category: selectedCategory,
+    category_kn: CATEGORY_LABELS_KN[selectedCategory] || selectedCategory,
+    speaker_id: speakerId,
+    duration_sec: recordedDurationSec || 18.0,
     spoken_query_example: finalCaption.slice(0, 32),
     verbatim_audio_transcript_kn: verbatim || finalCaption,
     corrected_caption_kn: finalCaption,
@@ -537,10 +690,8 @@ addSceneToDatasetBtn.addEventListener("click", () => {
       .split(/\s+/)
       .filter((w) => w.length > 2)
       .slice(0, 5),
-    tags_en: ["karnataka"],
-    image_url:
-      uploadedImageDataUrl ||
-      "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=1400&q=85",
+    tags_en: ["karnataka", selectedCategory.toLowerCase()],
+    image_url: imageDataUrl,
     custom_wav_url: recordedStudioWavBlob ? URL.createObjectURL(recordedStudioWavBlob) : null,
     fallback_theme: { bg1: "#78350f", bg2: "#d97706", icon: "📷", label: finalCaption.slice(0, 24) }
   };
@@ -553,36 +704,64 @@ addSceneToDatasetBtn.addEventListener("click", () => {
   studioVerbatimInput.value = "";
   studioCaptionInput.value = "";
   recordedStudioWavBlob = null;
-  uploadedImageDataUrl = "";
-  previewImage.style.display = "none";
+  recordedDurationSec = 0;
+  hasUploadedPhoto = false;
+  uploadedOriginalImage = null;
+  uploadCanvas.style.display = "none";
+  resetBlurBtn.style.display = "none";
   uploadPlaceholder.style.display = "block";
   studioAudioPreview.style.display = "none";
-  studioAudioInfo.textContent = "ಮೈಕ್ ಒತ್ತಿ ಚಿತ್ರದ ಬಗ್ಗೆ ಕನ್ನಡದಲ್ಲಿ ಹೇಳಿ";
+  updateTimerDisplay(0);
+  studioAudioInfo.textContent = "ಮೈಕ್ ಒತ್ತಿ ಚಿತ್ರದ ಬಗ್ಗೆ ಕನ್ನಡದಲ್ಲಿ 15–30 ಸೆಕೆಂಡ್ ಮಾತನಾಡಿ";
 
-  showToast("✅ ಹೊಸ ಚಿತ್ರ ಮತ್ತು ಧ್ವನಿ ವಿವರಣೆಯನ್ನು ಸೇರಿಸಲಾಗಿದೆ!");
+  showToast(`✅ ಟ್ರಿಪ್ಲೆಟ್ ${newId} ಸೇರಿಸಲಾಗಿದೆ!`);
 });
 
-// Export Dataset JSON
-exportJsonBtn.addEventListener("click", () => {
-  const exportPayload = {
-    challenge: "03 · Chitra-Maathu (ಚಿತ್ರ-ಮಾತು · ಚಿತ್ರ, ಧ್ವನಿ ಮತ್ತು ವಿವರಣೆ)",
-    total_records: dataset.length,
-    records: dataset.map(({ image_url, custom_wav_url, fallback_theme, ...cleanRecord }) => ({
-      ...cleanRecord,
-      image_file: `${cleanRecord.id}.jpg`,
-      audio_file: `${cleanRecord.id}.wav`
-    }))
-  };
+// Export Official Metadata CSV (Slide 2: place, category, speaker ID, one row per triplet)
+function escapeCsvField(val) {
+  const str = String(val ?? "").replace(/"/g, '""');
+  return `"${str}"`;
+}
 
-  const blob = new Blob([JSON.stringify(exportPayload, null, 2)], {
-    type: "application/json;charset=utf-8"
-  });
+exportCsvBtn.addEventListener("click", () => {
+  const headers = [
+    "triplet_id",
+    "photo_file",
+    "audio_file",
+    "caption_file",
+    "place",
+    "category",
+    "speaker_id",
+    "duration_sec",
+    "spoken_transcript_kn",
+    "clean_caption_kn"
+  ];
+
+  const rows = dataset.map((d) => [
+    d.id,
+    `photos/${d.id}.jpg`,
+    `audio/${d.id}.wav`,
+    `captions/${d.id}.txt`,
+    d.region || "ಕರ್ನಾಟಕ",
+    d.category || "Streets",
+    d.speaker_id || "SPK-01",
+    d.duration_sec || 18.0,
+    d.verbatim_audio_transcript_kn || "",
+    d.corrected_caption_kn || ""
+  ]);
+
+  const csvContent =
+    "\uFEFF" +
+    [headers.map(escapeCsvField).join(","), ...rows.map((r) => r.map(escapeCsvField).join(","))].join("\r\n");
+
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = "chitra_maathu_dataset.json";
+  a.download = "metadata.csv";
   a.click();
-  showToast("⬇️ ಡೇಟಾಸೆಟ್ ಡೌನ್‌ಲೋಡ್ ಆಗಿದೆ (chitra_maathu_dataset.json)");
+  showToast("⬇️ ಡೇಟಾಸೆಟ್ CSV ಡೌನ್‌ಲೋಡ್ ಆಗಿದೆ (metadata.csv)");
 });
 
 // Boot App
+updateStatusText(false);
 renderScenesGrid(currentResults, false);
