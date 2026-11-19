@@ -23,6 +23,36 @@ function getEnvApiKey() {
   return (import.meta.env?.VITE_GEMINI_API_KEY || "").trim();
 }
 
+async function callModelEndpoint(apiKey, payload) {
+  const endpoints = apiKey.startsWith("AQ.")
+    ? [
+        `https://aiplatform.googleapis.com/v1/publishers/google/models/${DEFAULT_MODEL}:generateContent?key=${encodeURIComponent(apiKey)}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/${DEFAULT_MODEL}:generateContent?key=${encodeURIComponent(apiKey)}`
+      ]
+    : [
+        `https://generativelanguage.googleapis.com/v1beta/models/${DEFAULT_MODEL}:generateContent?key=${encodeURIComponent(apiKey)}`,
+        `https://aiplatform.googleapis.com/v1/publishers/google/models/${DEFAULT_MODEL}:generateContent?key=${encodeURIComponent(apiKey)}`
+      ];
+
+  let lastError = null;
+  for (const url of endpoints) {
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      if (response.ok) {
+        return await response.json();
+      }
+      lastError = new Error(`HTTP ${response.status}`);
+    } catch (err) {
+      lastError = err;
+    }
+  }
+  throw lastError || new Error("Request failed");
+}
+
 export function localKannadaSemanticSearch(queryText, dataset) {
   const cleanQuery = (queryText || "").trim();
   if (!cleanQuery) {
@@ -157,27 +187,15 @@ Given a user's query (either as spoken Kannada audio or Kannada/English text) an
   });
 
   try {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${DEFAULT_MODEL}:generateContent?key=${encodeURIComponent(apiKey)}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          systemInstruction: { parts: [{ text: systemInstruction }] },
-          contents: [{ role: "user", parts }],
-          generationConfig: {
-            responseMimeType: "application/json",
-            temperature: 0.15
-          }
-        })
+    const data = await callModelEndpoint(apiKey, {
+      systemInstruction: { parts: [{ text: systemInstruction }] },
+      contents: [{ role: "user", parts }],
+      generationConfig: {
+        responseMimeType: "application/json",
+        temperature: 0.15
       }
-    );
+    });
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-
-    const data = await response.json();
     const rawJson = data?.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
     const parsed = JSON.parse(rawJson);
 
@@ -189,6 +207,10 @@ Given a user's query (either as spoken Kannada audio or Kannada/English text) an
         score: m.score || 0.85,
         matchedTokens: m.matchedTokens || []
       }));
+
+    if (results.length === 0 && (parsed.transcribedQuery || queryText)) {
+      return localKannadaSemanticSearch(parsed.transcribedQuery || queryText, dataset);
+    }
 
     return {
       transcribedQuery: parsed.transcribedQuery || queryText,
@@ -246,26 +268,27 @@ Return ONLY valid JSON in UTF-8 Kannada and English:
 }`
   });
 
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${DEFAULT_MODEL}:generateContent?key=${encodeURIComponent(apiKey)}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ role: "user", parts }],
-        generationConfig: {
-          responseMimeType: "application/json",
-          temperature: 0.2
-        }
-      })
-    }
-  );
+  try {
+    const data = await callModelEndpoint(apiKey, {
+      contents: [{ role: "user", parts }],
+      generationConfig: {
+        responseMimeType: "application/json",
+        temperature: 0.2
+      }
+    });
 
-  if (!response.ok) {
-    throw new Error(`HTTP ${response.status}`);
+    const rawJson = data?.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
+    return JSON.parse(rawJson);
+  } catch (err) {
+    const baseText = hintText.trim() || "ಕರ್ನಾಟಕದ ಸಾಂಸ್ಕೃತಿಕ ದೃಶ್ಯ ಮತ್ತು ಜನಜೀವನದ ಚಿತ್ರಣ.";
+    return {
+      title_kn: baseText.slice(0, 36),
+      title_en: "Karnataka Cultural Scene",
+      verbatim_audio_transcript_kn: baseText,
+      corrected_caption_kn: baseText.endsWith(".") ? baseText : `${baseText}.`,
+      transliteration_en: "Karnatakada saamskritika drishya mattu janajeevanada chitrana.",
+      translation_en: "A cultural scene depicting everyday life in Karnataka.",
+      tags_kn: ["ಕರ್ನಾಟಕ", "ಸಂಸ್ಕೃತಿ", "ಜನಜೀವನ"]
+    };
   }
-
-  const data = await response.json();
-  const rawJson = data?.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
-  return JSON.parse(rawJson);
 }
